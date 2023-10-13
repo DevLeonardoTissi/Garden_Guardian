@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id ("com.google.devtools.ksp")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -57,13 +57,13 @@ dependencies {
 
     //Room Database
     val roomVersion = "2.5.2"
-    implementation ("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
-    ksp ("androidx.room:room-compiler:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     //Koin
     val koinVersion = "3.5.0"
-    implementation ("io.insert-koin:koin-android:$koinVersion")
+    implementation("io.insert-koin:koin-android:$koinVersion")
 
 
     implementation("androidx.core:core-ktx:1.12.0")

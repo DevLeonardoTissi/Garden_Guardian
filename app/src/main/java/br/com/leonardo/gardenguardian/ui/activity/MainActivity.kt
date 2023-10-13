@@ -1,4 +1,4 @@
-package br.com.leonardo.gardenguardian
+package br.com.leonardo.gardenguardian.ui.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import coil.compose.AsyncImage
