@@ -1,102 +1,158 @@
 package br.com.leonardo.gardenguardian.ui.activity
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
-import androidx.compose.ui.unit.dp
-import br.com.leonardo.gardenguardian.R
-import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
+import androidx.core.content.ContextCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import br.com.leonardo.gardenguardian.broadcastReceiver.BluetoothBroadcastReceiver
+import br.com.leonardo.gardenguardian.ui.screens.homeScreen.HomeScreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
-import coil.compose.AsyncImage
 
 class MainActivity : ComponentActivity() {
+    private val bluetoothBroadcastReceiver: BluetoothBroadcastReceiver =
+        BluetoothBroadcastReceiver()
+
+    private val bluetoothAdapter: BluetoothAdapter? by lazy {
+        BluetoothAdapter.getDefaultAdapter()
+    }
+
+    private val permissionBluetoothLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                enableBluetooth()
+
+            } else {
+                Toast.makeText(this, "Permissão negada ao bluetooth", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+
+    private val permitionBluetoothScanLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+
+                searchDevices()
+
+            } else {
+                Toast.makeText(this, "Permissão negada para scan", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+
+    private fun enableBluetooth() {
+
+        if (bluetoothAdapter != null) {
+            if (!bluetoothAdapter!!.isEnabled) {
+                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                requestBluetoothLauncher.launch(enableBtIntent)
+            }
+//            else if (bluetoothAdapter!!.isEnabled) {
+//                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+//                requestBluetoothLauncher.launch(enableBtIntent)
+//            }
+        }
+    }
+
+
+    private val requestBluetoothLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+
+            if (hasBluetoothScanPermission()) {
+                searchDevices()
+            } else {
+                permitionBluetoothScanLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
+            }
+
+
+        } else {
+            Toast.makeText(this, "Erro", Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+
+    private fun searchDevices() {
+        Log.i("TAG", "ttt: ")
+        bluetoothAdapter?.startDiscovery()
+        Log.i("TAG", "ttt: passou do startdiscovery")
+
+        Log.i("TAG", "ttt: passou do intentfilter")
+
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+        registerReceiver(bluetoothBroadcastReceiver, filter)
+
+        askBluetoothConnectPermission()
+
+
+
+
         setContent {
+            val navController = rememberNavController()
             GardenGuardianTheme {
                 Surface {
-                    Adf()
+                    NavHost(navController = navController, startDestination = "home") {
+                        composable(route = "home") { HomeScreen() }
+                    }
                 }
             }
         }
     }
-}
 
-@Composable
-@Preview(showSystemUi = true)
-fun Adf() {
-
-    Surface(shape = RoundedCornerShape(15.dp), shadowElevation = 4.dp, modifier = Modifier.padding(16.dp)) {
-        Column(modifier = Modifier.fillMaxWidth().heightIn(400.dp, 450.dp)) {
-
-            Box(
-                modifier = Modifier
-                    .background(
-                        brush = Brush.verticalGradient(colors = listOf(DarkGreen, Color.White))
-                    )
-                    .fillMaxWidth()
-            ) {
-                AsyncImage(
-                    modifier = Modifier
-                        .size(200.dp)
-                        .offset(y = 100.dp)
-                        .clip(shape = CircleShape)
-                        .align(Alignment.BottomCenter)
-                        .border(
-                            BorderStroke(
-                                2.dp,
-                                brush = Brush.verticalGradient(listOf(Color.White, DarkGreen))
-                            ), CircleShape
-                        ),
-                    model = "https://img.freepik.com/fotos-gratis/planta-zz-em-um-vaso-cinza_53876-134285.jpg?w=740&t=st=1696877614~exp=1696878214~hmac=6df009433f3cecc5f802bf4e378b07d68e6374cdbdb12a65f54cb71c89508556",
-                    contentDescription = null,
-                    placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                    contentScale = ContentScale.Crop
-
-                )
+    private fun askBluetoothConnectPermission() {
+        if (Build.VERSION.SDK_INT >= 31) {
+            if (!hasBluetoothPermission()) {
+                permissionBluetoothLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            } else {
+                enableBluetooth()
             }
-
-
-            Spacer(modifier = Modifier.height(100.dp))
-            Text(
-                text = LoremIpsum(50).values.first(),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .align(CenterHorizontally)
-                    .padding(all = 8.dp)
-            )
-
+        } else {
+            enableBluetooth()
         }
     }
 
+    private fun hasBluetoothPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 
+
+    private fun hasBluetoothScanPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.BLUETOOTH_SCAN
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+//        unregisterReceiver()
+    }
 }
+
