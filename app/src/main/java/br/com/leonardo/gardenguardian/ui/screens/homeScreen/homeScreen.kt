@@ -11,6 +11,7 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,19 +44,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.broadcastReceiver.BluetoothBroadcastReceiver
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
+import br.com.leonardo.gardenguardian.ui.theme.Red
+import br.com.leonardo.gardenguardian.ui.theme.Yellow
+import br.com.leonardo.gardenguardian.utils.PlantState
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import org.koin.androidx.compose.koinViewModel
 import java.io.IOException
 import java.util.UUID
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-@Preview(showSystemUi = true)
-fun HomeScreen() {
+fun HomeScreen( homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 //    val bluetoothBroadcastReceiver: BluetoothBroadcastReceiver =
 //        BluetoothBroadcastReceiver()
@@ -209,7 +215,17 @@ fun HomeScreen() {
 //
 //
 
+    val plantState by homeScreenViewModel.plantState.collectAsStateWithLifecycle(initialValue = null)
+    val selectColorByState by animateColorAsState(
+        targetValue = when (plantState) {
 
+            PlantState.LowWater -> Red
+            PlantState.Alert -> Yellow
+            else -> DarkGreen
+        }, label = "Update color"
+    )
+
+    homeScreenViewModel.updateColor()
 
 
     Surface(
@@ -226,7 +242,7 @@ fun HomeScreen() {
             Box(
                 modifier = Modifier
                     .background(
-                        brush = Brush.verticalGradient(colors = listOf(DarkGreen, Color.White))
+                        brush = Brush.verticalGradient(listOf(selectColorByState, Color.White))
                     )
                     .fillMaxWidth()
             ) {
@@ -239,7 +255,7 @@ fun HomeScreen() {
                         .border(
                             BorderStroke(
                                 2.dp,
-                                brush = Brush.verticalGradient(listOf(Color.White, DarkGreen))
+                                brush = Brush.verticalGradient(listOf(Color.White,selectColorByState))
                             ), CircleShape
                         ),
                     model = "https://img.freepik.com/fotos-gratis/planta-zz-em-um-vaso-cinza_53876-134285.jpg?w=740&t=st=1696877614~exp=1696878214~hmac=6df009433f3cecc5f802bf4e378b07d68e6374cdbdb12a65f54cb71c89508556",
