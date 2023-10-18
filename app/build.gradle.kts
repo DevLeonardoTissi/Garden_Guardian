@@ -61,6 +61,9 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
+
+    implementation ("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
+
     //Koin
     val koinVersion = "3.5.0"
     implementation("io.insert-koin:koin-android:$koinVersion")
