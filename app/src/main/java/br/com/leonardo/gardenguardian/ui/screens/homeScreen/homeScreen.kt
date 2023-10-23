@@ -15,8 +15,10 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +28,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,9 +46,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
@@ -48,19 +59,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.broadcastReceiver.BluetoothBroadcastReceiver
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
+import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import br.com.leonardo.gardenguardian.ui.theme.Red
 import br.com.leonardo.gardenguardian.ui.theme.Yellow
+import br.com.leonardo.gardenguardian.utils.BluetoothState
+import br.com.leonardo.gardenguardian.utils.DeviceConnectionState
 import br.com.leonardo.gardenguardian.utils.PlantState
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import org.koin.androidx.compose.koinViewModel
 import java.io.IOException
 import java.util.UUID
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun HomeScreen( homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
+fun HomeScreen(homeScreenViewModel:HomeScreenViewModel = koinViewModel()) {
+//
 
 //    val bluetoothBroadcastReceiver: BluetoothBroadcastReceiver =
 //        BluetoothBroadcastReceiver()
@@ -214,6 +230,23 @@ fun HomeScreen( homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 //
 //
 //
+    homeScreenViewModel.checkInitialBluetoothState()
+
+    val bluetoothState by homeScreenViewModel.bluetoothStatus.collectAsStateWithLifecycle(
+        initialValue = BluetoothState.DISABLED
+    )
+
+    val selectColorByBluetoothStatus by animateColorAsState(
+        targetValue = when(bluetoothState){
+            BluetoothState.ENABLED -> DarkGreen
+            BluetoothState.DISABLED -> Red
+        }, label = "Update Color"
+    )
+
+    val bluetoothDeviceStatus by homeScreenViewModel.deviceConnectionState.collectAsStateWithLifecycle(
+        initialValue = DeviceConnectionState.DISCONNECTED
+    )
+
 
     val plantState by homeScreenViewModel.plantState.collectAsStateWithLifecycle(initialValue = null)
     val selectColorByState by animateColorAsState(
@@ -224,6 +257,12 @@ fun HomeScreen( homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             else -> DarkGreen
         }, label = "Update color"
     )
+
+//    val selectColorByState by animateColorAsState(
+//        targetValue = Red,
+//        label = "Update color"
+//    )
+
 
     homeScreenViewModel.updateColor()
 
@@ -255,7 +294,12 @@ fun HomeScreen( homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                         .border(
                             BorderStroke(
                                 2.dp,
-                                brush = Brush.verticalGradient(listOf(Color.White,selectColorByState))
+                                brush = Brush.verticalGradient(
+                                    listOf(
+                                        Color.White,
+                                        selectColorByState
+                                    )
+                                )
                             ), CircleShape
                         ),
                     model = "https://img.freepik.com/fotos-gratis/planta-zz-em-um-vaso-cinza_53876-134285.jpg?w=740&t=st=1696877614~exp=1696878214~hmac=6df009433f3cecc5f802bf4e378b07d68e6374cdbdb12a65f54cb71c89508556",
@@ -277,26 +321,52 @@ fun HomeScreen( homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                     .padding(all = 8.dp)
             )
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 24.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_bluetooth),
+                        contentDescription = "",
+                        tint = selectColorByBluetoothStatus,
+                        modifier = Modifier
+                    )
+
+                }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(Icons.Default.Check, contentDescription = "", tint = DarkGreen)
+
+                }
+            }
+
         }
+
+
     }
-
-
-
-
-
 
 
 }
 
 
-
-
-
+@Preview
+@Composable
+fun homeScreenPreview() {
+    GardenGuardianTheme {
+        Surface {
+            HomeScreen()
+        }
+    }
+}
 
 
 //private fun stopReadingData() {
 //    isReadingData = false
 //}
+
+
 
 
 

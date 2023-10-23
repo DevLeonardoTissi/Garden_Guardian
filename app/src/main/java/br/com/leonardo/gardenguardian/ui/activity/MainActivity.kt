@@ -16,6 +16,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,7 +31,8 @@ import java.util.UUID
 
 class MainActivity : ComponentActivity() {
 
-
+    private val bluetoothBroadcastReceiver: BluetoothBroadcastReceiver =
+        BluetoothBroadcastReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+
+
+        val filter = IntentFilter().apply {
+            addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+            addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
+        }
+
+        registerReceiver(bluetoothBroadcastReceiver, filter)
     }
 
 
@@ -52,5 +64,14 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
+}
+@Preview
+@Composable
+fun AppPreview(){
+    GardenGuardianTheme {
+        Surface {
+            HomeScreen()
+        }
+    }
 }
 

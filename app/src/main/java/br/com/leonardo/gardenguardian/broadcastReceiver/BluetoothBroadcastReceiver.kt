@@ -8,9 +8,33 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import br.com.leonardo.gardenguardian.utils.BluetoothState
+import br.com.leonardo.gardenguardian.utils.DeviceConnectionState
+import br.com.leonardo.gardenguardian.utils.PlantState
+import br.com.leonardo.gardenguardian.utils.checkBluetoothState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class BluetoothBroadcastReceiver : BroadcastReceiver() {
-    private val bluetoothDeviceList: MutableList<BluetoothDevice> = mutableListOf()
+
+    companion object{
+        private val _bluetoothStatus: MutableStateFlow<BluetoothState> =
+            MutableStateFlow(BluetoothState.DISABLED)
+        val bluetoothStatus: Flow<BluetoothState> = _bluetoothStatus
+
+        private val _deviceConnectionState: MutableStateFlow<DeviceConnectionState> =
+            MutableStateFlow(DeviceConnectionState.DISCONNECTED)
+        val deviceConnectionState: Flow<DeviceConnectionState> = _deviceConnectionState
+
+        fun checkInitialBluetoothState() {
+           if (checkBluetoothState()){
+               _bluetoothStatus.value = BluetoothState.ENABLED
+           }else{
+               _bluetoothStatus.value = BluetoothState.DISABLED
+           }
+        }
+    }
+
 
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -21,44 +45,34 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
             if (action == BluetoothAdapter.ACTION_STATE_CHANGED) {
                 when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)) {
-                    BluetoothAdapter.STATE_OFF -> Toast.makeText(
-                        context,
-                        "Bluetooth Desativado",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    BluetoothAdapter.STATE_OFF -> _bluetoothStatus.value = BluetoothState.DISABLED
+                    BluetoothAdapter.STATE_ON -> _bluetoothStatus.value = BluetoothState.ENABLED
 
-                    BluetoothAdapter.STATE_ON -> Toast.makeText(
-                        context,
-                        "Bluetooth Ativado",
-                        Toast.LENGTH_LONG
-                    ).show()
                 }
+
             } else if (action == BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) {
                 val state = intent.getIntExtra(
                     BluetoothAdapter.EXTRA_CONNECTION_STATE,
                     BluetoothAdapter.ERROR
                 )
 
-                when (state) {
-                    BluetoothAdapter.STATE_CONNECTED -> Toast.makeText(
-                        context,
-                        "Dispositivo Bluetooth está conectado",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                val device: BluetoothDevice? =
+                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
 
-                    BluetoothAdapter.STATE_DISCONNECTED -> Toast.makeText(
-                        context,
-                        "Dispositivo Bluetooth está desconectado",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                if (device != null && device.name == "HC-06") {
+                    when (state) {
+                        BluetoothAdapter.STATE_CONNECTED -> _deviceConnectionState.value =
+                            DeviceConnectionState.CONNECTED
 
+                        BluetoothAdapter.STATE_DISCONNECTED -> _deviceConnectionState.value =
+                            DeviceConnectionState.DISCONNECTED
+
+                    }
                 }
-
-
             }
-
-
         }
+
+
 
 
 //        intent?.let {
