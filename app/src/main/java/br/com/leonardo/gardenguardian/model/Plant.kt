@@ -7,6 +7,6 @@ import java.util.UUID
 @Entity
 data class Plant(
     @PrimaryKey
-    val id: String = UUID.randomUUID().toString(),
+    val id: Long,
     val img: String? = null
 )

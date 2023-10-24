@@ -5,9 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothSocket
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
@@ -32,46 +30,43 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
-import br.com.leonardo.gardenguardian.broadcastReceiver.BluetoothBroadcastReceiver
+import br.com.leonardo.gardenguardian.services.BluetoothPlantMonitorService
+import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import br.com.leonardo.gardenguardian.ui.theme.Red
 import br.com.leonardo.gardenguardian.ui.theme.Yellow
+import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.BluetoothState
 import br.com.leonardo.gardenguardian.utils.DeviceConnectionState
 import br.com.leonardo.gardenguardian.utils.PlantState
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import okhttp3.internal.wait
 import org.koin.androidx.compose.koinViewModel
 import java.io.IOException
 import java.util.UUID
@@ -87,29 +82,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
     val context = LocalContext.current
 
-    lateinit var socket: BluetoothSocket
-
-    val startReadingData: (socket: BluetoothSocket) -> Unit = {
-        var isReadingData = true
-        Thread {
-            while (isReadingData) {
-                try {
-                    val inputStream = socket.inputStream
-                    val buffer = ByteArray(1024)
-                    val bytes = inputStream.read(buffer)
-                    val message = String(buffer, 0, bytes)
-                    Log.i("dispositivos", message)
-
-                } catch (e: IOException) {
-                    // Lide com a exceção adequadamente
-                    isReadingData = false
-                }
-            }
-
-
-        }.start()
-    }
-
+    homeScreenViewModel.deviceConnected()
 
     val permissions = mutableListOf(
         Manifest.permission.BLUETOOTH,
@@ -144,6 +117,10 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
         })
 
+    val openBluetoothSettings = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { }
+
 
     homeScreenViewModel.checkInitialBluetoothState()
 
@@ -162,14 +139,22 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         initialValue = DeviceConnectionState.DISCONNECTED
     )
 
+    val plant by homeScreenViewModel.plant.collectAsStateWithLifecycle(null)
+
 
     val plantState by homeScreenViewModel.plantState.collectAsStateWithLifecycle(initialValue = null)
     val selectColorByState by animateColorAsState(
-        targetValue = when (plantState) {
+        targetValue = when (bluetoothDeviceStatus) {
 
-            PlantState.LowWater -> Red
-            PlantState.Alert -> Yellow
-            else -> DarkGreen
+            DeviceConnectionState.DISCONNECTED -> Color.White
+            DeviceConnectionState.CONNECTED -> when (plantState) {
+                PlantState.LowWater -> Red
+                PlantState.Alert -> Yellow
+                PlantState.Ok -> DarkGreen
+                else -> Color.White
+            }
+
+
         }, label = "Update color"
     )
 
@@ -177,9 +162,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 //        targetValue = Red,
 //        label = "Update color"
 //    )
-
-
-    homeScreenViewModel.updateColor()
 
 
     Surface(
@@ -200,6 +182,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                     )
                     .fillMaxWidth()
             ) {
+
+
                 AsyncImage(
                     modifier = Modifier
                         .size(200.dp)
@@ -217,12 +201,35 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                 )
                             ), CircleShape
                         ),
-                    model = "https://img.freepik.com/fotos-gratis/planta-zz-em-um-vaso-cinza_53876-134285.jpg?w=740&t=st=1696877614~exp=1696878214~hmac=6df009433f3cecc5f802bf4e378b07d68e6374cdbdb12a65f54cb71c89508556",
+                    model = if (plant?.img.isNullOrBlank()) DEFAULT_IMAGE_URL else plant?.img,
                     contentDescription = null,
                     placeholder = painterResource(id = R.drawable.ic_launcher_background),
                     contentScale = ContentScale.Crop
 
                 )
+
+
+                IconButton(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.BottomCenter)
+                        .offset(y = 100.dp, x = 50.dp)
+                        .size(50.dp)
+                        .background(color = DarkGreen, shape = CircleShape)
+
+                        .border(
+                            BorderStroke(
+                                2.dp,
+                                color = Color.White
+                            ), CircleShape
+                        )
+                ) {
+                    Icon(Icons.Default.Edit, "", tint = Color.White)
+
+                }
+
+
             }
 
 
@@ -269,7 +276,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                 }
                 IconButton(onClick = {
-
+                    var foundDevice = false
                     if (bluetoothState == BluetoothState.ENABLED) {
                         val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
                         val arduino = "HC-06"
@@ -277,25 +284,31 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                         pairedDevices?.forEach { device ->
                             val deviceName = device.name
-                            val deviceHardwareAddress = device.address // MAC address
+                            val deviceHardwareAddress = device.address
                             Log.i(
                                 "dispositivos",
                                 "nome: $deviceName: - address: $deviceHardwareAddress "
                             )
+
                             if (deviceName == arduino) {
+                                foundDevice = true
                                 val uuid: UUID =
                                     UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-                                socket = device.createRfcommSocketToServiceRecord(uuid)
+                                BluetoothSocketSingleton.socket =
+                                    device.createRfcommSocketToServiceRecord(uuid)
                                 try {
-                                    socket.connect()
+                                    BluetoothSocketSingleton.socket?.connect()
                                     Log.i("dispositivos", "Conectado ao arduino ")
-                                    val outputStream = socket.outputStream
-                                    val message = "c"
-                                    outputStream.write(message.toByteArray())
-                                    startReadingData(socket)
+
+                                    homeScreenViewModel.deviceConnected()
+
+                                    val intent =
+                                        Intent(context, BluetoothPlantMonitorService::class.java)
+                                    context.startService(intent)
 
 
                                 } catch (e: IOException) {
+                                    homeScreenViewModel.deviceDisconnected()
                                     Toast.makeText(
                                         context,
                                         "Não foi possível conectar ao arduino",
@@ -304,6 +317,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                     Log.i("dispositivos", "não conectado ao arduino ")
                                 }
                             }
+                        }
+
+                        if (!foundDevice) {
+                            val intent = Intent()
+                            intent.action = Settings.ACTION_BLUETOOTH_SETTINGS
+                            openBluetoothSettings.launch(intent)
+
+                            Log.i("dispositivos", "Dispositivo hc-06 não encontrado.")
                         }
 
 
@@ -318,12 +339,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 
                 }) {
-                    Icon(painter = painterResource(
-                        id = when (bluetoothDeviceStatus) {
-                            DeviceConnectionState.DISCONNECTED -> R.drawable.ic_link_off
-                            DeviceConnectionState.CONNECTED -> R.drawable.ic_check
-                        }
-                    ), contentDescription = "", tint = DarkGreen)
+                    Icon(
+                        painter = painterResource(
+                            id = when (bluetoothDeviceStatus) {
+                                DeviceConnectionState.DISCONNECTED -> R.drawable.ic_link_off
+                                DeviceConnectionState.CONNECTED -> R.drawable.ic_check
+                            }
+                        ), contentDescription = "", tint = DarkGreen
+                    )
 
                 }
             }
@@ -339,7 +362,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 @Preview
 @Composable
-fun homeScreenPreview() {
+fun HomeScreenPreview() {
     GardenGuardianTheme {
         Surface {
             HomeScreen()

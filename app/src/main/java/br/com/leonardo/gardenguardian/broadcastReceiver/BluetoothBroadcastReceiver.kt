@@ -17,24 +17,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
-    companion object{
+    companion object {
         private val _bluetoothStatus: MutableStateFlow<BluetoothState> =
             MutableStateFlow(BluetoothState.DISABLED)
         val bluetoothStatus: Flow<BluetoothState> = _bluetoothStatus
 
-        private val _deviceConnectionState: MutableStateFlow<DeviceConnectionState> =
-            MutableStateFlow(DeviceConnectionState.DISCONNECTED)
-        val deviceConnectionState: Flow<DeviceConnectionState> = _deviceConnectionState
+
 
         fun checkInitialBluetoothState() {
-           if (checkBluetoothState()){
-               _bluetoothStatus.value = BluetoothState.ENABLED
-           }else{
-               _bluetoothStatus.value = BluetoothState.DISABLED
-           }
+            if (checkBluetoothState()) {
+                _bluetoothStatus.value = BluetoothState.ENABLED
+            } else {
+                _bluetoothStatus.value = BluetoothState.DISABLED
+            }
         }
     }
-
 
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -50,29 +47,7 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
                 }
 
-            } else if (action == BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) {
-                val state = intent.getIntExtra(
-                    BluetoothAdapter.EXTRA_CONNECTION_STATE,
-                    BluetoothAdapter.ERROR
-                )
-
-                val device: BluetoothDevice? =
-                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-
-                if (device != null && device.name == "HC-06") {
-                    when (state) {
-                        BluetoothAdapter.STATE_CONNECTED -> _deviceConnectionState.value =
-                            DeviceConnectionState.CONNECTED
-
-                        BluetoothAdapter.STATE_DISCONNECTED -> _deviceConnectionState.value =
-                            DeviceConnectionState.DISCONNECTED
-
-                    }
-                }
             }
-        }
-
-
 
 
 //        intent?.let {
@@ -103,5 +78,6 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
 //                val deviceHardwareAddress = device?.address // MAC address
 //            }
 //        }
+        }
     }
 }

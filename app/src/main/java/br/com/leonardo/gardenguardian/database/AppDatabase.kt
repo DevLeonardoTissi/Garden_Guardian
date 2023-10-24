@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import br.com.leonardo.gardenguardian.database.dao.PlantDAO
 import br.com.leonardo.gardenguardian.model.Plant
 
-@Database(entities = [Plant::class], version = 1, exportSchema = false)
+@Database(entities = [Plant::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract val plantDAO: PlantDAO
 }
