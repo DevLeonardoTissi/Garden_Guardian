@@ -14,11 +14,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +32,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
@@ -111,11 +109,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         permissions = permissions
     )
 
+    val openAlertDialogErrorEnableBluetooth = remember { mutableStateOf(false) }
+
     val enableBluetoothLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
 
             if (it.resultCode != Activity.RESULT_OK) {
+                openAlertDialogErrorEnableBluetooth.value = true
                 Log.i("TAG", "HomeScreen: Erro ao ativar bluetooth")
             } else {
 
@@ -127,7 +128,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
-    val openAlertDialog = remember { mutableStateOf(false) }
+    val openAlertDialogNotSupportBluetooth = remember { mutableStateOf(false) }
+
 
 
     homeScreenViewModel.checkInitialBluetoothState()
@@ -264,7 +266,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                     if (bluetoothPermissionLauncher.allPermissionsGranted) {
                         if (bluetoothAdapter == null) {
 
-                            openAlertDialog.value = true
+                            openAlertDialogNotSupportBluetooth.value = true
 
 
                         } else if (bluetoothState == BluetoothState.DISABLED) {
@@ -367,13 +369,22 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
     }
 
-    if (openAlertDialog.value) {
+    if (openAlertDialogNotSupportBluetooth.value) {
         MyAlertDialog(
             dialogTitle = "Dispositivo não possui suporte ao bluetooth",
             dialogText = "Lamentamos, pelo ocorrido",
             icon = Icons.Default.Info,
-            onConfirmation = {openAlertDialog.value = false},
-            onDismissRequest = {openAlertDialog.value = false})
+            onConfirmation = {openAlertDialogNotSupportBluetooth.value = false},
+            onDismissRequest = {openAlertDialogNotSupportBluetooth.value = false})
+    }
+
+    if (openAlertDialogErrorEnableBluetooth.value) {
+        MyAlertDialog(
+            dialogTitle = "Erro",
+            dialogText = "Erro ao ativar o bluetooth do dispositivo",
+            icon = Icons.Default.Clear,
+            onConfirmation = {openAlertDialogErrorEnableBluetooth.value = false},
+            onDismissRequest = {openAlertDialogErrorEnableBluetooth.value = false})
     }
 
 
