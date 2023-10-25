@@ -16,11 +16,11 @@ fun MyAlertDialog(
     icon: ImageVector,
 ) {
     AlertDialog(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = { onDismissRequest() },
         confirmButton = { TextButton(onClick = { onConfirmation() }) { Text(text = ("confirm")) } },
         title = { Text(text = dialogTitle) },
         text = { Text(text = dialogText) },
         icon = { Icon(icon, contentDescription = null) },
-        dismissButton = { TextButton(onClick = { onDismissRequest }) { Text(text = "Dismiss") } }
+        dismissButton = { TextButton(onClick = { onDismissRequest() }) { Text(text = "Dismiss") } }
     )
 }
