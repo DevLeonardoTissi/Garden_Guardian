@@ -31,13 +31,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +47,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,6 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.services.BluetoothPlantMonitorService
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
+import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import br.com.leonardo.gardenguardian.ui.theme.Red
@@ -66,7 +68,6 @@ import br.com.leonardo.gardenguardian.utils.PlantState
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import okhttp3.internal.wait
 import org.koin.androidx.compose.koinViewModel
 import java.io.IOException
 import java.util.UUID
@@ -120,6 +121,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     val openBluetoothSettings = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
+
+    val openAlertDialog = remember { mutableStateOf(false) }
 
 
     homeScreenViewModel.checkInitialBluetoothState()
@@ -254,7 +257,9 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                     if (bluetoothPermissionLauncher.allPermissionsGranted) {
                         if (bluetoothAdapter == null) {
-                            // O dispositivo não suporta Bluetooth, lide com isso adequadamente
+
+                            openAlertDialog.value = true
+
 
                         } else if (bluetoothState == BluetoothState.DISABLED) {
                             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
@@ -354,6 +359,15 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         }
 
 
+    }
+
+    if (openAlertDialog.value) {
+        MyAlertDialog(
+            dialogTitle = "Dispositivo não possui suporte ao bluetooth",
+            dialogText = "Lamentamos, pelo ocorrido",
+            icon = Icons.Default.Info,
+            onConfirmation = {openAlertDialog.value = false},
+            onDismissRequest = {openAlertDialog.value = false})
     }
 
 
