@@ -21,11 +21,7 @@ class HomeScreenViewModel(private val repository: PlantRepository) : ViewModel()
     val plantState: Flow<PlantState?> = BluetoothPlantMonitorService.plantState
 
 
-    private val _deviceConnectionState: MutableStateFlow<DeviceConnectionState> =
-        MutableStateFlow(DeviceConnectionState.DISCONNECTED)
-
-
-    val deviceConnectionState: Flow<DeviceConnectionState> = _deviceConnectionState
+    val deviceConnectionState: Flow<DeviceConnectionState> = BluetoothBroadcastReceiver.deviceConnectionState
 
     val bluetoothStatus: Flow<BluetoothState> = BluetoothBroadcastReceiver.bluetoothStatus
 
@@ -33,21 +29,9 @@ class HomeScreenViewModel(private val repository: PlantRepository) : ViewModel()
 
     fun checkInitialBluetoothState() = BluetoothBroadcastReceiver.checkInitialBluetoothState()
 
-    fun deviceConnected() {
-        _deviceConnectionState.value = DeviceConnectionState.CONNECTED
-
-//        viewModelScope.launch {
-//            repository.search().collect{ plants ->
-//                Log.i("TAG", "deviceConnected: $plants")
-//            }
-//        }
+//    fun checkInitialConnectionDevice() = BluetoothBroadcastReceiver.checkInitialConnectionDevice()
 
 
-    }
-
-    fun deviceDisconnected() {
-        _deviceConnectionState.value = DeviceConnectionState.DISCONNECTED
-    }
 
 
 }

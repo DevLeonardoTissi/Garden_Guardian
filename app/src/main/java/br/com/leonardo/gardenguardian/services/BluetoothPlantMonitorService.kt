@@ -60,7 +60,7 @@ class BluetoothPlantMonitorService: Service() {
 
                 } catch (e: IOException) {
                     // Lide com a exceção adequadamente
-                    isReadingData = false
+//                    isReadingData = false
                 }
             }
 

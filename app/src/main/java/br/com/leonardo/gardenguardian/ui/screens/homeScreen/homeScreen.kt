@@ -86,7 +86,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
     val context = LocalContext.current
 
-    homeScreenViewModel.deviceConnected()
 
     val permissions = mutableListOf(
         Manifest.permission.BLUETOOTH,
@@ -133,6 +132,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 
     homeScreenViewModel.checkInitialBluetoothState()
+//    homeScreenViewModel.checkInitialConnectionDevice()
 
     val bluetoothState by homeScreenViewModel.bluetoothStatus.collectAsStateWithLifecycle(
         initialValue = BluetoothState.DISABLED
@@ -167,11 +167,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
         }, label = "Update color"
     )
-
-//    val selectColorByState by animateColorAsState(
-//        targetValue = Red,
-//        label = "Update color"
-//    )
 
 
     Surface(
@@ -311,17 +306,17 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                     device.createRfcommSocketToServiceRecord(uuid)
                                 try {
                                     BluetoothSocketSingleton.socket?.connect()
-                                    Log.i("dispositivos", "Conectado ao arduino ")
+                                    Log.i("dispositivos", "Conectado ao arduinoooo ")
 
-                                    homeScreenViewModel.deviceConnected()
+//                                    homeScreenViewModel.deviceConnected()
 
-                                    val intent =
-                                        Intent(context, BluetoothPlantMonitorService::class.java)
-                                    context.startService(intent)
+//                                    val intent =
+//                                        Intent(context, BluetoothPlantMonitorService::class.java)
+//                                    context.startService(intent)
 
 
                                 } catch (e: IOException) {
-                                    homeScreenViewModel.deviceDisconnected()
+//                                    homeScreenViewModel.deviceDisconnected()
                                     Toast.makeText(
                                         context,
                                         "Não foi possível conectar ao arduino",
