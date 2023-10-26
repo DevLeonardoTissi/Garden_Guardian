@@ -115,9 +115,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
             if (it.resultCode != Activity.RESULT_OK) {
                 openAlertDialogErrorEnableBluetooth.value = true
-                Log.i("TAG", "HomeScreen: Erro ao ativar bluetooth")
             } else {
-
+                // chamar dialog dizendo que bluetooth deu certo
             }
 
         })
@@ -131,7 +130,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 
     homeScreenViewModel.checkInitialBluetoothState()
-//    homeScreenViewModel.checkInitialConnectionDevice()
 
     val bluetoothState by homeScreenViewModel.bluetoothStatus.collectAsStateWithLifecycle(
         initialValue = BluetoothState.DISABLED
@@ -165,6 +163,13 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 
         }, label = "Update color"
+    )
+
+    val selectColorByDeviceStatus by animateColorAsState(
+        targetValue = when (bluetoothDeviceStatus) {
+            DeviceConnectionState.CONNECTED -> DarkGreen
+            DeviceConnectionState.DISCONNECTED -> Red
+        }, label = "colors by connection state"
     )
 
 
@@ -259,9 +264,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                     if (bluetoothPermissionLauncher.allPermissionsGranted) {
                         if (bluetoothAdapter == null) {
-
                             openAlertDialogNotSupportBluetooth.value = true
-
 
                         } else if (bluetoothState == BluetoothState.DISABLED) {
                             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
@@ -348,7 +351,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                 DeviceConnectionState.DISCONNECTED -> R.drawable.ic_link_off
                                 DeviceConnectionState.CONNECTED -> R.drawable.ic_check
                             }
-                        ), contentDescription = "", tint = DarkGreen
+                        ), contentDescription = "", tint = selectColorByDeviceStatus
                     )
 
                 }

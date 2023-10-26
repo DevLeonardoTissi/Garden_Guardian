@@ -25,8 +25,6 @@ class BluetoothPlantMonitorService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startReadingData()
-        Log.i("TAG", "onStartCommand: Iniciou comando")
-
         return START_NOT_STICKY
     }
 
@@ -67,7 +65,7 @@ class BluetoothPlantMonitorService : Service() {
         }
     }
 
-    private fun stopRear() {
+    private fun stopRead() {
         isReadingData = false
     }
 
@@ -76,7 +74,7 @@ class BluetoothPlantMonitorService : Service() {
     }
 
     override fun onDestroy() {
-        stopRear()
+        stopRead()
     }
 
 
