@@ -36,18 +36,6 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
             }
         }
 
-
-//        fun checkInitialConnectionDevice() {
-//            if (checkBluetoothState()) {
-//                if (isDeviceConnected("HC-06")) {
-//                    _deviceConnectionState.value = DeviceConnectionState.CONNECTED
-//                } else {
-//                    _deviceConnectionState.value = DeviceConnectionState.DISCONNECTED
-//                }
-//            } else {
-//                _deviceConnectionState.value = DeviceConnectionState.DISCONNECTED
-//            }
-//        }
     }
 
 
@@ -71,9 +59,7 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
                         _deviceConnectionState.value = DeviceConnectionState.CONNECTED
 
-                        val intent =
-                            Intent(context, BluetoothPlantMonitorService::class.java)
-                        context?.startService(intent)
+                        startBluetoothPlantMonitorService(context)
 
                     }
                 }
@@ -92,9 +78,7 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
                         // Adicione aqui a lógica adicional após a desconexão
                         _deviceConnectionState.value = DeviceConnectionState.DISCONNECTED
 
-                        val intent =
-                            Intent(context, BluetoothPlantMonitorService::class.java)
-                        context?.stopService(intent)
+                        stopBluetoothMonitorService(context)
                     }
                 }
 
@@ -106,6 +90,8 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
                         BluetoothAdapter.STATE_OFF -> {
                             _bluetoothStatus.value =
                                 BluetoothState.DISABLED
+
+                            stopBluetoothMonitorService(context)
 
                             _deviceConnectionState.value = DeviceConnectionState.DISCONNECTED
                         }
@@ -119,5 +105,17 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
         }
 
 
+    }
+
+    private fun startBluetoothPlantMonitorService(context: Context?) {
+        val intent =
+            Intent(context, BluetoothPlantMonitorService::class.java)
+        context?.startService(intent)
+    }
+
+    private fun stopBluetoothMonitorService(context: Context?) {
+        val intent =
+            Intent(context, BluetoothPlantMonitorService::class.java)
+        context?.stopService(intent)
     }
 }

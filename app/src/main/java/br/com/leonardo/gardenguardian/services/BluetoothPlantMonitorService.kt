@@ -1,7 +1,7 @@
 package br.com.leonardo.gardenguardian.services
+
 import android.app.NotificationManager
 import android.app.Service
-import android.bluetooth.BluetoothSocket
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
@@ -12,11 +12,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import org.koin.android.ext.android.inject
 import java.io.IOException
 
-class BluetoothPlantMonitorService: Service() {
+class BluetoothPlantMonitorService : Service() {
 
     private val notificationManager: NotificationManager by inject()
     private var isReadingData = true
@@ -31,14 +30,14 @@ class BluetoothPlantMonitorService: Service() {
         return START_NOT_STICKY
     }
 
-    companion object{
+    companion object {
         private val _plantState: MutableStateFlow<PlantState?> = MutableStateFlow(null)
         val plantState: Flow<PlantState?> = _plantState
 
     }
 
 
-    private fun startReadingData()  {
+    private fun startReadingData() {
 
         CoroutineScope(Dispatchers.IO).launch {
             while (isReadingData) {
@@ -50,7 +49,7 @@ class BluetoothPlantMonitorService: Service() {
                         val message = String(buffer, 0, bytes)
                         Log.i("dispositivos", message)
 
-                        when (message){
+                        when (message) {
                             "precisa regar" -> _plantState.value = PlantState.LowWater
                             "quase ok" -> _plantState.value = PlantState.Alert
                             "ok" -> _plantState.value = PlantState.Ok
@@ -68,7 +67,7 @@ class BluetoothPlantMonitorService: Service() {
         }
     }
 
-    private fun stopRear(){
+    private fun stopRear() {
         isReadingData = false
     }
 

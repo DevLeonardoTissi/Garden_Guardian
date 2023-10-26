@@ -57,7 +57,6 @@ import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
-import br.com.leonardo.gardenguardian.services.BluetoothPlantMonitorService
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
@@ -308,15 +307,11 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                     BluetoothSocketSingleton.socket?.connect()
                                     Log.i("dispositivos", "Conectado ao arduinoooo ")
 
-//                                    homeScreenViewModel.deviceConnected()
-
-//                                    val intent =
-//                                        Intent(context, BluetoothPlantMonitorService::class.java)
-//                                    context.startService(intent)
+                                    //Quando dispositivo já conectado, se tentar conexão novamente, dá erro e desconecta.
 
 
                                 } catch (e: IOException) {
-//                                    homeScreenViewModel.deviceDisconnected()
+
                                     Toast.makeText(
                                         context,
                                         "Não foi possível conectar ao arduino",
@@ -369,8 +364,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             dialogTitle = "Dispositivo não possui suporte ao bluetooth",
             dialogText = "Lamentamos, pelo ocorrido",
             icon = Icons.Default.Info,
-            onConfirmation = {openAlertDialogNotSupportBluetooth.value = false},
-            onDismissRequest = {openAlertDialogNotSupportBluetooth.value = false})
+            onConfirmation = { openAlertDialogNotSupportBluetooth.value = false },
+            onDismissRequest = { openAlertDialogNotSupportBluetooth.value = false })
     }
 
     if (openAlertDialogErrorEnableBluetooth.value) {
@@ -378,8 +373,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             dialogTitle = "Erro",
             dialogText = "Erro ao ativar o bluetooth do dispositivo",
             icon = Icons.Default.Clear,
-            onConfirmation = {openAlertDialogErrorEnableBluetooth.value = false},
-            onDismissRequest = {openAlertDialogErrorEnableBluetooth.value = false})
+            onConfirmation = { openAlertDialogErrorEnableBluetooth.value = false },
+            onDismissRequest = { openAlertDialogErrorEnableBluetooth.value = false })
     }
 
 
