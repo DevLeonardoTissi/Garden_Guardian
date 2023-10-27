@@ -1,8 +1,6 @@
 package br.com.leonardo.gardenguardian.ui.screens.homeScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import br.com.leonardo.gardenguardian.broadcastReceiver.BluetoothBroadcastReceiver
 import br.com.leonardo.gardenguardian.model.Plant
 import br.com.leonardo.gardenguardian.repository.PlantRepository
@@ -10,12 +8,9 @@ import br.com.leonardo.gardenguardian.services.BluetoothPlantMonitorService
 import br.com.leonardo.gardenguardian.utils.BluetoothState
 import br.com.leonardo.gardenguardian.utils.DeviceConnectionState
 import br.com.leonardo.gardenguardian.utils.PlantState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
-class HomeScreenViewModel(private val repository: PlantRepository) : ViewModel() {
+class HomeScreenViewModel(repository: PlantRepository) : ViewModel() {
 
 
     val plantState: Flow<PlantState?> = BluetoothPlantMonitorService.plantState
@@ -28,10 +23,5 @@ class HomeScreenViewModel(private val repository: PlantRepository) : ViewModel()
     val plant: Flow<Plant> = repository.search()
 
     fun checkInitialBluetoothState() = BluetoothBroadcastReceiver.checkInitialBluetoothState()
-
-//    fun checkInitialConnectionDevice() = BluetoothBroadcastReceiver.checkInitialConnectionDevice()
-
-
-
 
 }

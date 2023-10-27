@@ -6,9 +6,8 @@ import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import android.widget.Toast
 import br.com.leonardo.gardenguardian.services.BluetoothPlantMonitorService
+import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
 import br.com.leonardo.gardenguardian.utils.BluetoothState
 import br.com.leonardo.gardenguardian.utils.DeviceConnectionState
 import br.com.leonardo.gardenguardian.utils.checkBluetoothState
@@ -24,7 +23,6 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
         private val _deviceConnectionState: MutableStateFlow<DeviceConnectionState> =
             MutableStateFlow(DeviceConnectionState.DISCONNECTED)
-
         val deviceConnectionState: Flow<DeviceConnectionState> = _deviceConnectionState
 
 
@@ -41,7 +39,6 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
     @SuppressLint("MissingPermission")
     override fun onReceive(context: Context?, intent: Intent?) {
-
         val action: String? = intent?.action
 
         action?.let {
@@ -50,34 +47,17 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
                 BluetoothDevice.ACTION_ACL_CONNECTED -> {
                     val device: BluetoothDevice? =
                         intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    if (device?.name == "HC-06") {
-                        // Dispositivo conectado
-                        Log.i("TAG", "Conectado ao dispositivo HC-06")
-                        Toast.makeText(context, "Dispositivo HC-06 conectado", Toast.LENGTH_SHORT)
-                            .show()
-                        // Adicione aqui a lógica adicional após a conexão bem-sucedida
-
+                    if (device?.name == ARDUINO_DEVICE_NAME) {
                         _deviceConnectionState.value = DeviceConnectionState.CONNECTED
-
                         startBluetoothPlantMonitorService(context)
-
                     }
                 }
 
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
                     val device: BluetoothDevice? =
                         intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    if (device?.name == "HC-06") {
-                        // Dispositivo desconectado
-                        Log.i("TAG", "Desconectado do dispositivo HC-06")
-                        Toast.makeText(
-                            context,
-                            "Dispositivo HC-06 desconectado",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        // Adicione aqui a lógica adicional após a desconexão
+                    if (device?.name == ARDUINO_DEVICE_NAME) {
                         _deviceConnectionState.value = DeviceConnectionState.DISCONNECTED
-
                         stopBluetoothMonitorService(context)
                     }
                 }
@@ -87,12 +67,10 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
                         BluetoothAdapter.EXTRA_STATE,
                         BluetoothAdapter.ERROR
                     )) {
+
                         BluetoothAdapter.STATE_OFF -> {
-                            _bluetoothStatus.value =
-                                BluetoothState.DISABLED
-
+                            _bluetoothStatus.value = BluetoothState.DISABLED
                             stopBluetoothMonitorService(context)
-
                             _deviceConnectionState.value = DeviceConnectionState.DISCONNECTED
                         }
 
@@ -100,11 +78,7 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
                     }
                 }
             }
-
-
         }
-
-
     }
 
     private fun startBluetoothPlantMonitorService(context: Context?) {

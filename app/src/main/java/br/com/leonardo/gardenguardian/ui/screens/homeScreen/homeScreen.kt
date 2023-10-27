@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
@@ -57,6 +58,7 @@ import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
+import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
@@ -79,20 +81,16 @@ import java.util.UUID
 @Composable
 fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
-    val bluetoothAdapter: BluetoothAdapter? by lazy {
-        BluetoothAdapter.getDefaultAdapter()
-    }
+    val bluetoothAdapter: BluetoothAdapter? by lazy { BluetoothAdapter.getDefaultAdapter() }
 
     val context = LocalContext.current
-
 
     val permissions = mutableListOf(
         Manifest.permission.BLUETOOTH,
         Manifest.permission.BLUETOOTH_ADMIN,
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-
-        )
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )
 
     if (Build.VERSION.SDK_INT >= 31) {
         permissions.addAll(
@@ -108,6 +106,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     )
 
     val openAlertDialogErrorEnableBluetooth = remember { mutableStateOf(false) }
+    val openAlertDialogNotSupportBluetooth = remember { mutableStateOf(false) }
+    val openAlertDialogBluetoothEnable = remember { mutableStateOf(false) }
 
     val enableBluetoothLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -116,30 +116,17 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             if (it.resultCode != Activity.RESULT_OK) {
                 openAlertDialogErrorEnableBluetooth.value = true
             } else {
-                // chamar dialog dizendo que bluetooth deu certo
+                openAlertDialogBluetoothEnable.value = true
             }
 
         })
 
-    val openBluetoothSettings = rememberLauncherForActivityResult(
+    val openBluetoothSettingsLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { }
 
-    val openAlertDialogNotSupportBluetooth = remember { mutableStateOf(false) }
-
-
-
-    homeScreenViewModel.checkInitialBluetoothState()
-
     val bluetoothState by homeScreenViewModel.bluetoothStatus.collectAsStateWithLifecycle(
         initialValue = BluetoothState.DISABLED
-    )
-
-    val selectColorByBluetoothStatus by animateColorAsState(
-        targetValue = when (bluetoothState) {
-            BluetoothState.ENABLED -> DarkGreen
-            BluetoothState.DISABLED -> Red
-        }, label = "Update Color"
     )
 
     val bluetoothDeviceStatus by homeScreenViewModel.deviceConnectionState.collectAsStateWithLifecycle(
@@ -148,9 +135,17 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
     val plant by homeScreenViewModel.plant.collectAsStateWithLifecycle(null)
 
-
     val plantState by homeScreenViewModel.plantState.collectAsStateWithLifecycle(initialValue = null)
-    val selectColorByState by animateColorAsState(
+
+    val selectColorByBluetoothStatus by animateColorAsState(
+        targetValue = when (bluetoothState) {
+            BluetoothState.ENABLED -> DarkGreen
+            BluetoothState.DISABLED -> Red
+        }, label = "Update Color"
+    )
+
+
+    val selectColorByPlantState by animateColorAsState(
         targetValue = when (bluetoothDeviceStatus) {
 
             DeviceConnectionState.DISCONNECTED -> Color.White
@@ -172,6 +167,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         }, label = "colors by connection state"
     )
 
+    homeScreenViewModel.checkInitialBluetoothState()
+
 
     Surface(
         shape = RoundedCornerShape(15.dp),
@@ -188,7 +185,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             Box(
                 modifier = Modifier
                     .background(
-                        brush = Brush.verticalGradient(listOf(selectColorByState, Color.White))
+                        brush = Brush.verticalGradient(listOf(selectColorByPlantState, Color.White))
                     )
                     .fillMaxWidth()
             ) {
@@ -206,7 +203,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                 brush = Brush.verticalGradient(
                                     listOf(
                                         Color.White,
-                                        selectColorByState
+                                        selectColorByPlantState
                                     )
                                 )
                             ), CircleShape
@@ -261,8 +258,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             ) {
                 IconButton(onClick = {
 
-
                     if (bluetoothPermissionLauncher.allPermissionsGranted) {
+
                         if (bluetoothAdapter == null) {
                             openAlertDialogNotSupportBluetooth.value = true
 
@@ -287,52 +284,59 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 }
                 IconButton(onClick = {
                     var foundDevice = false
+
                     if (bluetoothState == BluetoothState.ENABLED) {
-                        val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
-                        val arduino = "HC-06"
-                        Log.i("TAG", "HomeScreen: entrou")
 
-                        pairedDevices?.forEach { device ->
-                            val deviceName = device.name
-                            val deviceHardwareAddress = device.address
-                            Log.i(
-                                "dispositivos",
-                                "nome: $deviceName: - address: $deviceHardwareAddress "
-                            )
+                        if (bluetoothPermissionLauncher.allPermissionsGranted) {
+                            val pairedDevices: Set<BluetoothDevice>? =
+                                bluetoothAdapter?.bondedDevices
 
-                            if (deviceName == arduino) {
-                                foundDevice = true
-                                val uuid: UUID =
-                                    UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-                                BluetoothSocketSingleton.socket =
-                                    device.createRfcommSocketToServiceRecord(uuid)
-                                try {
-                                    BluetoothSocketSingleton.socket?.connect()
-                                    Log.i("dispositivos", "Conectado ao arduinoooo ")
+                            pairedDevices?.forEach { device ->
+                                val deviceName = device.name
+                                val deviceHardwareAddress = device.address
+                                Log.i(
+                                    "dispositivos",
+                                    "nome: $deviceName: - address: $deviceHardwareAddress "
+                                )
 
-                                    //Quando dispositivo já conectado, se tentar conexão novamente, dá erro e desconecta.
+                                if (deviceName == ARDUINO_DEVICE_NAME) {
+                                    foundDevice = true
 
+                                    if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
+                                        BluetoothSocketSingleton.socket?.close()
+                                    } else {
+                                        BluetoothSocketSingleton.socket =
+                                            device.createRfcommSocketToServiceRecord(
+                                                UUID.fromString(
+                                                    "00001101-0000-1000-8000-00805F9B34FB"
+                                                )
+                                            )
+                                        try {
+                                            BluetoothSocketSingleton.socket?.connect()
+                                        } catch (e: IOException) {
 
-                                } catch (e: IOException) {
+                                            Toast.makeText(
+                                                context,
+                                                "Não foi possível conectar ao arduino",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            Log.i("dispositivos", "não conectado ao arduino ")
+                                        }
+                                    }
 
-                                    Toast.makeText(
-                                        context,
-                                        "Não foi possível conectar ao arduino",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    Log.i("dispositivos", "não conectado ao arduino ")
                                 }
                             }
+
+                            if (!foundDevice) {
+                                openBluetoothSettingsLauncher.launch(Intent().apply {
+                                    this.action = Settings.ACTION_BLUETOOTH_SETTINGS
+                                })
+
+                                Log.i("dispositivos", "Dispositivo hc-06 não encontrado.")
+                            }
+                        } else {
+                            bluetoothPermissionLauncher.launchMultiplePermissionRequest()
                         }
-
-                        if (!foundDevice) {
-                            val intent = Intent()
-                            intent.action = Settings.ACTION_BLUETOOTH_SETTINGS
-                            openBluetoothSettings.launch(intent)
-
-                            Log.i("dispositivos", "Dispositivo hc-06 não encontrado.")
-                        }
-
 
                     } else {
                         Toast.makeText(
@@ -356,7 +360,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                 }
             }
-
         }
 
 
@@ -380,6 +383,15 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             onDismissRequest = { openAlertDialogErrorEnableBluetooth.value = false })
     }
 
+    if (openAlertDialogBluetoothEnable.value) {
+        MyAlertDialog(
+            dialogTitle = "Bluetooth Ativado",
+            dialogText = "Sucesso na ativação do Bluetooth",
+            icon = Icons.Default.Check,
+            onConfirmation = { openAlertDialogBluetoothEnable.value = false },
+            onDismissRequest = { openAlertDialogBluetoothEnable.value = false })
+    }
+
 
 }
 
@@ -394,10 +406,6 @@ fun HomeScreenPreview() {
     }
 }
 
-
-//private fun stopReadingData() {
-//    isReadingData = false
-//}
 
 
 

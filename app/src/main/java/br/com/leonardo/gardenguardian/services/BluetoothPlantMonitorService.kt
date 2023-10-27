@@ -4,7 +4,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.PlantState
 import kotlinx.coroutines.CoroutineScope
@@ -31,9 +30,7 @@ class BluetoothPlantMonitorService : Service() {
     companion object {
         private val _plantState: MutableStateFlow<PlantState?> = MutableStateFlow(null)
         val plantState: Flow<PlantState?> = _plantState
-
     }
-
 
     private fun startReadingData() {
 
@@ -45,7 +42,6 @@ class BluetoothPlantMonitorService : Service() {
                         val buffer = ByteArray(1024)
                         val bytes = inputStream.read(buffer)
                         val message = String(buffer, 0, bytes)
-                        Log.i("dispositivos", message)
 
                         when (message) {
                             "precisa regar" -> _plantState.value = PlantState.LowWater
@@ -55,13 +51,10 @@ class BluetoothPlantMonitorService : Service() {
                     }
 
 
-                } catch (e: IOException) {
-                    // Lide com a exceção adequadamente
-//                    isReadingData = false
+                } catch (_: IOException) {
+
                 }
             }
-
-
         }
     }
 
