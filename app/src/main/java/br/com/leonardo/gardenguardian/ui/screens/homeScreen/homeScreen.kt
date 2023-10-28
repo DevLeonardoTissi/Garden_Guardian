@@ -60,6 +60,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
+import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
 import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
@@ -108,6 +109,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     val openAlertDialogErrorEnableBluetooth = remember { mutableStateOf(false) }
     val openAlertDialogNotSupportBluetooth = remember { mutableStateOf(false) }
     val openAlertDialogBluetoothEnable = remember { mutableStateOf(false) }
+    val openAlertDialogDeviceNotFound = remember { mutableStateOf(false) }
+    val openAlertDialogEditPlantImage = remember { mutableStateOf(false) }
 
     val enableBluetoothLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -217,7 +220,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { openAlertDialogEditPlantImage.value = true },
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .align(Alignment.BottomCenter)
@@ -328,11 +331,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                             }
 
                             if (!foundDevice) {
-                                openBluetoothSettingsLauncher.launch(Intent().apply {
-                                    this.action = Settings.ACTION_BLUETOOTH_SETTINGS
-                                })
-
-                                Log.i("dispositivos", "Dispositivo hc-06 não encontrado.")
+                                openAlertDialogDeviceNotFound.value = true
                             }
                         } else {
                             bluetoothPermissionLauncher.launchMultiplePermissionRequest()
@@ -390,6 +389,32 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             icon = Icons.Default.Check,
             onConfirmation = { openAlertDialogBluetoothEnable.value = false },
             onDismissRequest = { openAlertDialogBluetoothEnable.value = false })
+    }
+
+    if (openAlertDialogDeviceNotFound.value) {
+        MyAlertDialog(
+            dialogTitle = "Dispositivo não encontrado",
+            dialogText = "Para prosseguir, procure pelo dispositivo $ARDUINO_DEVICE_NAME e faça o pareamento ",
+            icon = Icons.Default.Clear,
+            onConfirmation = {
+                openAlertDialogDeviceNotFound.value = false
+                openBluetoothSettingsLauncher.launch(Intent().apply {
+                    this.action = Settings.ACTION_BLUETOOTH_SETTINGS
+                })
+            },
+            onDismissRequest = { openAlertDialogDeviceNotFound.value = false })
+    }
+
+    if (openAlertDialogEditPlantImage.value) {
+        DialogWithImage(
+            onDismissRequest = { openAlertDialogEditPlantImage.value = false },
+            onConfirmation = { newUrl ->
+                openAlertDialogEditPlantImage.value = false
+                homeScreenViewModel.updateImg(newUrl)
+            },
+            url = plant?.img,
+            imageDescription = ""
+        )
     }
 
 

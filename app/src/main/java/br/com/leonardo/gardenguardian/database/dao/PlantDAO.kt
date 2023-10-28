@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PlantDAO {
     @Insert(onConflict = REPLACE)
-     fun insert(plant:Plant)
+     suspend fun insert(plant:Plant)
 
     @Query("SELECT * FROM PLANT")
     fun search(): Flow<Plant>

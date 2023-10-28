@@ -5,7 +5,9 @@ import br.com.leonardo.gardenguardian.model.Plant
 
 class PlantRepository(private val dao:PlantDAO) {
 
-    fun insert(plant: Plant) = dao.insert(plant)
+    suspend fun insertUrl(url:String?){
+        dao.insert(Plant(img = url))
+    }
     fun search() = dao.search()
 
 
