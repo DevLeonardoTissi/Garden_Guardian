@@ -55,12 +55,12 @@ fun MyAlertDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTextField(
-    searchText: String,
+    searchText: String?,
     onSearchChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
-        value = searchText,
+        value = searchText?: "",
         onValueChange = { newValue ->
             onSearchChange(newValue)
         },
@@ -121,7 +121,7 @@ fun DialogWithImage(
                 )
 
                 SearchTextField(
-                    searchText = newUrl!!,
+                    searchText = newUrl,
                     onSearchChange = {newUrl = it},
                     modifier = Modifier.height(80.dp).padding(10.dp)
                 )
