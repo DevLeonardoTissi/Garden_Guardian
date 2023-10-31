@@ -63,10 +63,10 @@ import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
 import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
-import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
-import br.com.leonardo.gardenguardian.ui.theme.Red
-import br.com.leonardo.gardenguardian.ui.theme.Yellow
+import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
+import br.com.leonardo.gardenguardian.ui.theme.red
+import br.com.leonardo.gardenguardian.ui.theme.yellow
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.enums.BluetoothState
 import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
@@ -142,8 +142,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
     val selectColorByBluetoothStatus by animateColorAsState(
         targetValue = when (bluetoothState) {
-            BluetoothState.ENABLED -> DarkGreen
-            BluetoothState.DISABLED -> Red
+            BluetoothState.ENABLED -> md_theme_light_primary
+            BluetoothState.DISABLED -> red
         }, label = "Update Color"
     )
 
@@ -153,9 +153,9 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
             DeviceConnectionState.DISCONNECTED -> Color.White
             DeviceConnectionState.CONNECTED -> when (plantState) {
-                PlantState.LowWater -> Red
-                PlantState.Alert -> Yellow
-                PlantState.Ok -> DarkGreen
+                PlantState.LowWater -> red
+                PlantState.Alert -> yellow
+                PlantState.Ok -> md_theme_light_primary
                 else -> Color.White
             }
 
@@ -165,8 +165,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
     val selectColorByDeviceStatus by animateColorAsState(
         targetValue = when (bluetoothDeviceStatus) {
-            DeviceConnectionState.CONNECTED -> DarkGreen
-            DeviceConnectionState.DISCONNECTED -> Red
+            DeviceConnectionState.CONNECTED -> md_theme_light_primary
+            DeviceConnectionState.DISCONNECTED -> red
         }, label = "colors by connection state"
     )
 
@@ -224,7 +224,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                         .align(Alignment.BottomCenter)
                         .offset(y = 100.dp, x = 50.dp)
                         .size(50.dp)
-                        .background(color = DarkGreen, shape = CircleShape)
+                        .background(color = md_theme_light_primary, shape = CircleShape)
 
                         .border(
                             BorderStroke(

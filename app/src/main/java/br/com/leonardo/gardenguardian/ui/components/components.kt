@@ -30,7 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import br.com.leonardo.gardenguardian.R
-import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
+import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
 import coil.compose.AsyncImage
 
 @Composable
@@ -69,7 +69,7 @@ fun SearchTextField(
             Icon(
                 painter = painterResource(id = R.drawable.ic_grass),
                 contentDescription = "ícone de lupa",
-                tint = DarkGreen
+                tint = md_theme_light_primary
             )
         },
         label = {
@@ -89,8 +89,8 @@ fun MyAsyncImage(
 ) {
     AsyncImage(
         model = model, contentDescription = description, contentScale = contentScale,
-        error = painterResource(id = R.drawable.ic_launcher_background),
-        placeholder = painterResource(id = R.drawable.ic_launcher_background), modifier = modifier,
+        error = painterResource(id = R.drawable.error),
+        placeholder = painterResource(id = R.drawable.placeholder), modifier = modifier,
     )
 }
 
