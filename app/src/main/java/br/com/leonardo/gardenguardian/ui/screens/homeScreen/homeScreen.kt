@@ -64,9 +64,9 @@ import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
 import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
+import br.com.leonardo.gardenguardian.ui.theme.dark_yellow
 import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
 import br.com.leonardo.gardenguardian.ui.theme.red
-import br.com.leonardo.gardenguardian.ui.theme.yellow
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.enums.BluetoothState
 import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
@@ -154,7 +154,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             DeviceConnectionState.DISCONNECTED -> Color.White
             DeviceConnectionState.CONNECTED -> when (plantState) {
                 PlantState.LowWater -> red
-                PlantState.Alert -> yellow
+                PlantState.Alert -> dark_yellow
                 PlantState.Ok -> md_theme_light_primary
                 else -> Color.White
             }
