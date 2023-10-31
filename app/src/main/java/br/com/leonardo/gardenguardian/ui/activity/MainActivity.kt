@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import br.com.leonardo.gardenguardian.broadcastReceiver.BluetoothBroadcastReceiver
 import br.com.leonardo.gardenguardian.ui.screens.homeScreen.HomeScreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
+import br.com.leonardo.gardenguardian.utils.sealed.AppDestinations
 
 class MainActivity : ComponentActivity() {
 
@@ -44,9 +45,12 @@ class MainActivity : ComponentActivity() {
                             Icon(Icons.Default.Info, contentDescription = "")
                         }
                     }) { paddingValues ->
-                        Box(modifier = Modifier.padding(paddingValues)){
-                            NavHost(navController = navController, startDestination = "home") {
-                                composable(route = "home") { HomeScreen() }
+                        Box(modifier = Modifier.padding(paddingValues)) {
+                            NavHost(
+                                navController = navController,
+                                startDestination = AppDestinations.Home.route
+                            ) {
+                                composable(AppDestinations.Home.route) { HomeScreen() }
                             }
                         }
 
@@ -55,7 +59,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
 
 
         val filter = IntentFilter().apply {
@@ -74,9 +77,10 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+
 @Preview
 @Composable
-fun AppPreview(){
+fun AppPreview() {
     GardenGuardianTheme {
         Surface {
             HomeScreen()

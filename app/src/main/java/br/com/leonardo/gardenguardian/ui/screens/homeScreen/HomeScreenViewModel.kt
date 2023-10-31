@@ -6,9 +6,9 @@ import br.com.leonardo.gardenguardian.broadcastReceiver.BluetoothBroadcastReceiv
 import br.com.leonardo.gardenguardian.model.Plant
 import br.com.leonardo.gardenguardian.repository.PlantRepository
 import br.com.leonardo.gardenguardian.services.BluetoothPlantMonitorService
-import br.com.leonardo.gardenguardian.utils.BluetoothState
-import br.com.leonardo.gardenguardian.utils.DeviceConnectionState
-import br.com.leonardo.gardenguardian.utils.PlantState
+import br.com.leonardo.gardenguardian.utils.enums.BluetoothState
+import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
+import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 

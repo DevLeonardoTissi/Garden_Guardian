@@ -3,10 +3,10 @@ package br.com.leonardo.gardenguardian.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import br.com.leonardo.gardenguardian.R
-import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
 import coil.compose.AsyncImage
 
@@ -60,14 +59,18 @@ fun SearchTextField(
     modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
-        value = searchText?: "",
+        value = searchText ?: "",
         onValueChange = { newValue ->
             onSearchChange(newValue)
         },
         modifier,
         shape = RoundedCornerShape(100),
         leadingIcon = {
-            Icon(painter = painterResource(id = R.drawable.ic_grass), contentDescription = "ícone de lupa", tint = DarkGreen)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_grass),
+                contentDescription = "ícone de lupa",
+                tint = DarkGreen
+            )
         },
         label = {
             Text(text = "Link da imagem")
@@ -77,27 +80,39 @@ fun SearchTextField(
         })
 }
 
-
+@Composable
+fun MyAsyncImage(
+    model: String?,
+    description: String?,
+    modifier: Modifier,
+    contentScale: ContentScale
+) {
+    AsyncImage(
+        model = model, contentDescription = description, contentScale = contentScale,
+        error = painterResource(id = R.drawable.ic_launcher_background),
+        placeholder = painterResource(id = R.drawable.ic_launcher_background), modifier = modifier,
+    )
+}
 
 
 @Composable
 fun DialogWithImage(
     onDismissRequest: () -> Unit,
-    onConfirmation: (newUrl:String?) -> Unit,
-     url : String?,
+    onConfirmation: (newUrl: String?) -> Unit,
+    url: String?,
     imageDescription: String,
 ) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(450.dp)
-                .padding(16.dp),
+                .wrapContentHeight(),
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .wrapContentHeight()
+                    .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,15 +120,14 @@ fun DialogWithImage(
 
                 var newUrl by remember { mutableStateOf(url) }
 
+                if (!newUrl.isNullOrBlank()) {
+                    MyAsyncImage(
+                        model = newUrl,
+                        description = imageDescription,
+                        modifier = Modifier, contentScale = ContentScale.Fit
+                    )
+                }
 
-                AsyncImage(
-                    model = if (newUrl.isNullOrBlank()) DEFAULT_IMAGE_URL else newUrl,
-                    contentDescription = imageDescription,
-                    contentScale = ContentScale.Fit,
-                    placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                    modifier = Modifier
-                        .height(160.dp)
-                )
 
                 Text(
                     text = "Cole o link da imagem da sua planta",
@@ -122,8 +136,10 @@ fun DialogWithImage(
 
                 SearchTextField(
                     searchText = newUrl,
-                    onSearchChange = {newUrl = it},
-                    modifier = Modifier.height(80.dp).padding(10.dp)
+                    onSearchChange = { newUrl = it },
+                    modifier = Modifier
+                        .height(80.dp)
+                        .padding(10.dp)
                 )
 
 

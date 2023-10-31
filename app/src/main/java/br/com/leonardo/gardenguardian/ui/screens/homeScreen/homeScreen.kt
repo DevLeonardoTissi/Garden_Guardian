@@ -62,15 +62,15 @@ import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
 import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
+import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
 import br.com.leonardo.gardenguardian.ui.theme.DarkGreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import br.com.leonardo.gardenguardian.ui.theme.Red
 import br.com.leonardo.gardenguardian.ui.theme.Yellow
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
-import br.com.leonardo.gardenguardian.utils.BluetoothState
-import br.com.leonardo.gardenguardian.utils.DeviceConnectionState
-import br.com.leonardo.gardenguardian.utils.PlantState
-import coil.compose.AsyncImage
+import br.com.leonardo.gardenguardian.utils.enums.BluetoothState
+import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
+import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.koin.androidx.compose.koinViewModel
@@ -194,7 +194,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             ) {
 
 
-                AsyncImage(
+                MyAsyncImage(
                     modifier = Modifier
                         .size(200.dp)
                         .offset(y = 100.dp)
@@ -212,10 +212,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                             ), CircleShape
                         ),
                     model = if (plant?.img.isNullOrBlank()) DEFAULT_IMAGE_URL else plant?.img,
-                    contentDescription = null,
-                    placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                    contentScale = ContentScale.Crop
-
+                    description = null,
+                    contentScale = ContentScale.Crop,
                 )
 
 

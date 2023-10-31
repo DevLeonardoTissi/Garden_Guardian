@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
-import br.com.leonardo.gardenguardian.utils.PlantState
+import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

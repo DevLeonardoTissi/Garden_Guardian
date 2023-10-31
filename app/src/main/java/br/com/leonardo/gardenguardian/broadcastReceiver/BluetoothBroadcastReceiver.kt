@@ -8,8 +8,8 @@ import android.content.Context
 import android.content.Intent
 import br.com.leonardo.gardenguardian.services.BluetoothPlantMonitorService
 import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
-import br.com.leonardo.gardenguardian.utils.BluetoothState
-import br.com.leonardo.gardenguardian.utils.DeviceConnectionState
+import br.com.leonardo.gardenguardian.utils.enums.BluetoothState
+import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
 import br.com.leonardo.gardenguardian.utils.checkBluetoothState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
