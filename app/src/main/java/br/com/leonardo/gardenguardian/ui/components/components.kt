@@ -96,11 +96,12 @@ fun AnimatedAlertDialogWithConfirmButton(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     rawRes: Int,
-    text:String
+    text: String,
+    title: String? = null
 ) {
 
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(rawRes))
-    Dialog(onDismissRequest = {onDismissRequest()}) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,12 +110,21 @@ fun AnimatedAlertDialogWithConfirmButton(
         ) {
             Column(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+
+                title?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(16.dp),
+                    )
+                }
+
 
                 LottieAnimation(
                     composition = composition,
@@ -138,8 +148,6 @@ fun AnimatedAlertDialogWithConfirmButton(
         }
     }
 }
-
-
 
 
 @Composable

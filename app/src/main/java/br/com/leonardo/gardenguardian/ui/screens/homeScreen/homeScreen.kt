@@ -32,7 +32,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,7 +59,6 @@ import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.components.AnimatedAlertDialogWithConfirmButton
 import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
-import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
 import br.com.leonardo.gardenguardian.ui.components.tryConnectionDeviceAlertDialog
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
@@ -116,6 +114,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     val openAlertDialogDeviceNotFound = remember { mutableStateOf(false) }
     val openAlertDialogEditPlantImage = remember { mutableStateOf(false) }
     val openAlertDialogLoad = remember { mutableStateOf(false) }
+    val openAlertDialogBluetoothAlreadyActivated = remember { mutableStateOf(false) }
 
     val enableBluetoothLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -264,6 +263,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             ) {
                 IconButton(onClick = {
 
+
+
                     if (bluetoothPermissionLauncher.allPermissionsGranted) {
 
                         if (bluetoothAdapter == null) {
@@ -272,6 +273,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                         } else if (bluetoothState == BluetoothState.DISABLED) {
                             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                             enableBluetoothLauncher.launch(enableBtIntent)
+                        }else{
+                            openAlertDialogBluetoothAlreadyActivated.value = true
                         }
 
                     } else {
@@ -295,7 +298,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                         if (bluetoothPermissionLauncher.allPermissionsGranted) {
 
-                            CoroutineScope(Dispatchers.IO).launch{
+                            CoroutineScope(Dispatchers.IO).launch {
 
                                 val pairedDevices: Set<BluetoothDevice>? =
                                     bluetoothAdapter?.bondedDevices
@@ -328,13 +331,16 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                             } catch (e: IOException) {
                                                 openAlertDialogLoad.value = false
 
-                                                withContext(Dispatchers.Main){
+                                                withContext(Dispatchers.Main) {
                                                     Toast.makeText(
                                                         context,
                                                         "Não foi possível conectar ao arduino",
                                                         Toast.LENGTH_SHORT
                                                     ).show()
-                                                    Log.i("dispositivos", "não conectado ao arduino ")
+                                                    Log.i(
+                                                        "dispositivos",
+                                                        "não conectado ao arduino "
+                                                    )
                                                 }
                                             }
                                         }
@@ -380,49 +386,67 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
     }
 
+
+
     if (openAlertDialogNotSupportBluetooth.value) {
-            AnimatedAlertDialogWithConfirmButton(
-                onConfirmation = { openAlertDialogNotSupportBluetooth.value = false },
-                onDismissRequest = { openAlertDialogNotSupportBluetooth.value = false },
-                rawRes = R.raw.sad,
-                text = "Lamentamos, mas seu dispositivo não possui suporte ao bluetooth")
+        AnimatedAlertDialogWithConfirmButton(
+            onConfirmation = { openAlertDialogNotSupportBluetooth.value = false },
+            onDismissRequest = { openAlertDialogNotSupportBluetooth.value = false },
+            rawRes = R.raw.sad,
+            text = "Lamentamos, mas seu dispositivo não possui suporte ao bluetooth",
+            title = "Dispositivo sem suporte"
+        )
     }
 
     if (openAlertDialogErrorEnableBluetooth.value) {
-        MyAlertDialog(
-            dialogTitle = "Erro",
-            dialogText = "Erro ao ativar o bluetooth do dispositivo",
-            icon = Icons.Default.Clear,
+        AnimatedAlertDialogWithConfirmButton(
             onConfirmation = { openAlertDialogErrorEnableBluetooth.value = false },
-            onDismissRequest = { openAlertDialogErrorEnableBluetooth.value = false })
+            onDismissRequest = { openAlertDialogErrorEnableBluetooth.value = false },
+            rawRes = R.raw.error,
+            text = "Erro ao ativar bluetooth",
+            title = "Erro na ativação"
+        )
     }
+
+    if (openAlertDialogBluetoothAlreadyActivated.value){
+        AnimatedAlertDialogWithConfirmButton(
+            onConfirmation = { openAlertDialogBluetoothAlreadyActivated.value = false },
+            onDismissRequest = { openAlertDialogBluetoothAlreadyActivated.value = false },
+            rawRes = R.raw.bluetooth,
+            title = "Bluetooth já ativado",
+            text = "Seu dispositivo Bluetooth já está ativado"
+        )
+    }
+
 
     if (openAlertDialogBluetoothEnable.value) {
         AnimatedAlertDialogWithConfirmButton(
             onConfirmation = { openAlertDialogBluetoothEnable.value = false },
             onDismissRequest = { openAlertDialogBluetoothEnable.value = false },
             rawRes = R.raw.bluetooth_enable,
-            text = "Bluetooth Ativado")
+            text = "Bluetooth Ativado",
+            title = "Sucesso na ativação"
+        )
     }
 
     if (openAlertDialogDeviceNotFound.value) {
-        MyAlertDialog(
-            dialogTitle = "Dispositivo não encontrado",
-            dialogText = "Para prosseguir, procure pelo dispositivo $ARDUINO_DEVICE_NAME e faça o pareamento ",
-            icon = Icons.Default.Clear,
+        AnimatedAlertDialogWithConfirmButton(
             onConfirmation = {
                 openAlertDialogDeviceNotFound.value = false
                 openBluetoothSettingsLauncher.launch(Intent().apply {
                     this.action = Settings.ACTION_BLUETOOTH_SETTINGS
                 })
             },
-            onDismissRequest = { openAlertDialogDeviceNotFound.value = false })
+            onDismissRequest = { openAlertDialogDeviceNotFound.value = false },
+            rawRes = R.raw.bluetooth_paired,
+            text = "Para prosseguir, procure pelo dispositivo $ARDUINO_DEVICE_NAME e faça o pareamento ",
+            title = "Dispositivo não pareado"
+        )
     }
 
 
     if (openAlertDialogLoad.value) {
         tryConnectionDeviceAlertDialog()
-
     }
 
     if (openAlertDialogEditPlantImage.value) {
