@@ -6,13 +6,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,7 +32,9 @@ import androidx.compose.ui.window.Dialog
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
 import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
@@ -55,21 +57,91 @@ fun MyAlertDialog(
 
 
 @Composable
-fun LoadAlertDialog(
-    dialogTitle: String,
-    dialogText: String,
-    icon: ImageVector
-) {
-//    val remember by rememberLottieComposition(LottieCompositionSpec.RawRes() )
+fun tryConnectionDeviceAlertDialog() {
 
-    AlertDialog(title = { Text(text = dialogTitle) },
-        text = { Text(text = dialogText) },
-        icon = { Icon(icon, contentDescription = null) }, onDismissRequest = {}, confirmButton = {})
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.bluetooth))
+    Dialog(onDismissRequest = {}) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
 
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.size(170.dp)
+                )
 
+                Text(
+                    text = "Tentendo conectar ao dispositivo",
+                    modifier = Modifier.padding(16.dp),
+                )
+            }
+        }
+    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnimatedAlertDialogWithConfirmButton(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    rawRes: Int,
+    text:String
+) {
+
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(rawRes))
+    Dialog(onDismissRequest = {onDismissRequest()}) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.size(170.dp)
+                )
+
+                Text(
+                    text = text,
+                    modifier = Modifier.padding(16.dp),
+                )
+
+
+                TextButton(
+                    onClick = { onConfirmation() },
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    Text("Ok")
+                }
+            }
+        }
+    }
+}
+
+
+
+
 @Composable
 fun SearchTextField(
     searchText: String?,

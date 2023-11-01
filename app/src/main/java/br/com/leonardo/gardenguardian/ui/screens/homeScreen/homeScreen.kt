@@ -32,11 +32,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -61,10 +58,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
+import br.com.leonardo.gardenguardian.ui.components.AnimatedAlertDialogWithConfirmButton
 import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
-import br.com.leonardo.gardenguardian.ui.components.LoadAlertDialog
 import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
+import br.com.leonardo.gardenguardian.ui.components.tryConnectionDeviceAlertDialog
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import br.com.leonardo.gardenguardian.ui.theme.dark_yellow
 import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
@@ -383,12 +381,11 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     }
 
     if (openAlertDialogNotSupportBluetooth.value) {
-        MyAlertDialog(
-            dialogTitle = "Dispositivo não possui suporte ao bluetooth",
-            dialogText = "Lamentamos, pelo ocorrido",
-            icon = Icons.Default.Info,
-            onConfirmation = { openAlertDialogNotSupportBluetooth.value = false },
-            onDismissRequest = { openAlertDialogNotSupportBluetooth.value = false })
+            AnimatedAlertDialogWithConfirmButton(
+                onConfirmation = { openAlertDialogNotSupportBluetooth.value = false },
+                onDismissRequest = { openAlertDialogNotSupportBluetooth.value = false },
+                rawRes = R.raw.sad,
+                text = "Lamentamos, mas seu dispositivo não possui suporte ao bluetooth")
     }
 
     if (openAlertDialogErrorEnableBluetooth.value) {
@@ -401,12 +398,11 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     }
 
     if (openAlertDialogBluetoothEnable.value) {
-        MyAlertDialog(
-            dialogTitle = "Bluetooth Ativado",
-            dialogText = "Sucesso na ativação do Bluetooth",
-            icon = Icons.Default.Check,
+        AnimatedAlertDialogWithConfirmButton(
             onConfirmation = { openAlertDialogBluetoothEnable.value = false },
-            onDismissRequest = { openAlertDialogBluetoothEnable.value = false })
+            onDismissRequest = { openAlertDialogBluetoothEnable.value = false },
+            rawRes = R.raw.bluetooth_enable,
+            text = "Bluetooth Ativado")
     }
 
     if (openAlertDialogDeviceNotFound.value) {
@@ -425,10 +421,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 
     if (openAlertDialogLoad.value) {
-        LoadAlertDialog(
-            dialogTitle = "Tentando conexão",
-            dialogText = "Aguarde",
-            icon = Icons.Default.Refresh)
+        tryConnectionDeviceAlertDialog()
+
     }
 
     if (openAlertDialogEditPlantImage.value) {
