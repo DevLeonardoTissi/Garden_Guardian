@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -61,6 +62,7 @@ import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
+import br.com.leonardo.gardenguardian.ui.components.LoadAlertDialog
 import br.com.leonardo.gardenguardian.ui.components.MyAlertDialog
 import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
@@ -73,6 +75,10 @@ import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
 import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import java.io.IOException
 import java.util.UUID
@@ -111,6 +117,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     val openAlertDialogBluetoothEnable = remember { mutableStateOf(false) }
     val openAlertDialogDeviceNotFound = remember { mutableStateOf(false) }
     val openAlertDialogEditPlantImage = remember { mutableStateOf(false) }
+    val openAlertDialogLoad = remember { mutableStateOf(false) }
 
     val enableBluetoothLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -289,48 +296,61 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                     if (bluetoothState == BluetoothState.ENABLED) {
 
                         if (bluetoothPermissionLauncher.allPermissionsGranted) {
-                            val pairedDevices: Set<BluetoothDevice>? =
-                                bluetoothAdapter?.bondedDevices
 
-                            pairedDevices?.forEach { device ->
-                                val deviceName = device.name
-                                val deviceHardwareAddress = device.address
-                                Log.i(
-                                    "dispositivos",
-                                    "nome: $deviceName: - address: $deviceHardwareAddress "
-                                )
+                            CoroutineScope(Dispatchers.IO).launch{
 
-                                if (deviceName == ARDUINO_DEVICE_NAME) {
-                                    foundDevice = true
+                                val pairedDevices: Set<BluetoothDevice>? =
+                                    bluetoothAdapter?.bondedDevices
 
-                                    if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
-                                        BluetoothSocketSingleton.socket?.close()
-                                    } else {
-                                        BluetoothSocketSingleton.socket =
-                                            device.createRfcommSocketToServiceRecord(
-                                                UUID.fromString(
-                                                    "00001101-0000-1000-8000-00805F9B34FB"
+                                openAlertDialogLoad.value = true
+
+                                pairedDevices?.forEach { device ->
+                                    val deviceName = device.name
+                                    val deviceHardwareAddress = device.address
+                                    Log.i(
+                                        "dispositivos",
+                                        "nome: $deviceName: - address: $deviceHardwareAddress "
+                                    )
+
+                                    if (deviceName == ARDUINO_DEVICE_NAME) {
+                                        foundDevice = true
+
+                                        if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
+                                            BluetoothSocketSingleton.socket?.close()
+                                        } else {
+                                            BluetoothSocketSingleton.socket =
+                                                device.createRfcommSocketToServiceRecord(
+                                                    UUID.fromString(
+                                                        "00001101-0000-1000-8000-00805F9B34FB"
+                                                    )
                                                 )
-                                            )
-                                        try {
-                                            BluetoothSocketSingleton.socket?.connect()
-                                        } catch (e: IOException) {
+                                            try {
+                                                BluetoothSocketSingleton.socket?.connect()
+                                                openAlertDialogLoad.value = false
+                                            } catch (e: IOException) {
+                                                openAlertDialogLoad.value = false
 
-                                            Toast.makeText(
-                                                context,
-                                                "Não foi possível conectar ao arduino",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            Log.i("dispositivos", "não conectado ao arduino ")
+                                                withContext(Dispatchers.Main){
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Não foi possível conectar ao arduino",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    Log.i("dispositivos", "não conectado ao arduino ")
+                                                }
+                                            }
                                         }
-                                    }
 
+                                    }
+                                }
+
+                                if (!foundDevice) {
+                                    openAlertDialogLoad.value = false
+                                    openAlertDialogDeviceNotFound.value = true
                                 }
                             }
 
-                            if (!foundDevice) {
-                                openAlertDialogDeviceNotFound.value = true
-                            }
+
                         } else {
                             bluetoothPermissionLauncher.launchMultiplePermissionRequest()
                         }
@@ -401,6 +421,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 })
             },
             onDismissRequest = { openAlertDialogDeviceNotFound.value = false })
+    }
+
+
+    if (openAlertDialogLoad.value) {
+        LoadAlertDialog(
+            dialogTitle = "Tentando conexão",
+            dialogText = "Aguarde",
+            icon = Icons.Default.Refresh)
     }
 
     if (openAlertDialogEditPlantImage.value) {

@@ -32,6 +32,8 @@ import androidx.compose.ui.window.Dialog
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
 import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
 fun MyAlertDialog(
@@ -39,7 +41,7 @@ fun MyAlertDialog(
     onConfirmation: () -> Unit = {},
     dialogTitle: String,
     dialogText: String,
-    icon: ImageVector,
+    icon: ImageVector
 ) {
     AlertDialog(
         onDismissRequest = { onDismissRequest() },
@@ -47,8 +49,24 @@ fun MyAlertDialog(
         title = { Text(text = dialogTitle) },
         text = { Text(text = dialogText) },
         icon = { Icon(icon, contentDescription = null) },
-        dismissButton = { TextButton(onClick = { onDismissRequest() }) { Text(text = "Dismiss") } }
+        dismissButton = { TextButton(onClick = { onDismissRequest() }) { Text(text = "Dismiss") } },
     )
+}
+
+
+@Composable
+fun LoadAlertDialog(
+    dialogTitle: String,
+    dialogText: String,
+    icon: ImageVector
+) {
+//    val remember by rememberLottieComposition(LottieCompositionSpec.RawRes() )
+
+    AlertDialog(title = { Text(text = dialogTitle) },
+        text = { Text(text = dialogText) },
+        icon = { Icon(icon, contentDescription = null) }, onDismissRequest = {}, confirmButton = {})
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
