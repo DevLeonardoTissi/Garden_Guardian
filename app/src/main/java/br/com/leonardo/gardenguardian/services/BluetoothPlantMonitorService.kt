@@ -5,6 +5,8 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import br.com.leonardo.gardenguardian.R
+import br.com.leonardo.gardenguardian.notification.Notification
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import kotlinx.coroutines.CoroutineScope
@@ -45,11 +47,26 @@ class BluetoothPlantMonitorService : Service() {
                         val message = String(buffer, 0, bytes)
                         Log.i("TAG", "startReadingData: $message")
 
+                        var progress = 0
+
+
+
                         when (message) {
-                            "precisa regar" -> _plantState.value = PlantState.LowWater
-                            "quase ok" -> _plantState.value = PlantState.Alert
-                            "ok" -> _plantState.value = PlantState.Ok
+                            "precisa regar" -> {
+                                _plantState.value = PlantState.LowWater
+                                progress = 0
+                            }
+                            "quase ok" -> {
+                                _plantState.value = PlantState.Alert
+                                progress = 50
+                            }
+                            "ok" -> {
+                                _plantState.value = PlantState.Ok
+                                progress = 100
+                            }
                         }
+
+                        showNotification(message, calculatePercent(progress))
                     }
 
 
@@ -61,8 +78,26 @@ class BluetoothPlantMonitorService : Service() {
         }
     }
 
+    private fun calculatePercent(progress:Int):Int{
+        return ((1023 - progress) * 100 / 1023)
+    }
+
+    private fun showNotification(message:String, progress:Int){
+        Notification(applicationContext).show(
+            title = "Garden Guardian",
+            description = "$message: $progress%",
+            iconId = R.drawable.ic_grass,
+            isOnGoing = true,
+            isAutoCancel = false,
+            exclusiveId = Int.MAX_VALUE,
+            progress = progress
+
+        )
+    }
+
     private fun stopRead() {
         isReadingData = false
+        notificationManager.cancel(Int.MAX_VALUE)
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {

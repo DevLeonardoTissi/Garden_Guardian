@@ -264,7 +264,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 IconButton(onClick = {
 
 
-
                     if (bluetoothPermissionLauncher.allPermissionsGranted) {
 
                         if (bluetoothAdapter == null) {
@@ -273,7 +272,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                         } else if (bluetoothState == BluetoothState.DISABLED) {
                             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                             enableBluetoothLauncher.launch(enableBtIntent)
-                        }else{
+                        } else {
                             openAlertDialogBluetoothAlreadyActivated.value = true
                         }
 
@@ -298,27 +297,29 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                         if (bluetoothPermissionLauncher.allPermissionsGranted) {
 
+
                             CoroutineScope(Dispatchers.IO).launch {
 
-                                val pairedDevices: Set<BluetoothDevice>? =
-                                    bluetoothAdapter?.bondedDevices
+                                if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
+                                    BluetoothSocketSingleton.socket?.close()
+                                } else {
 
-                                openAlertDialogLoad.value = true
+                                    openAlertDialogLoad.value = true
 
-                                pairedDevices?.forEach { device ->
-                                    val deviceName = device.name
-                                    val deviceHardwareAddress = device.address
-                                    Log.i(
-                                        "dispositivos",
-                                        "nome: $deviceName: - address: $deviceHardwareAddress "
-                                    )
+                                    val pairedDevices: Set<BluetoothDevice>? =
+                                        bluetoothAdapter?.bondedDevices
 
-                                    if (deviceName == ARDUINO_DEVICE_NAME) {
-                                        foundDevice = true
+                                    pairedDevices?.forEach { device ->
+                                        val deviceName = device.name
+                                        val deviceHardwareAddress = device.address
+                                        Log.i(
+                                            "dispositivos",
+                                            "nome: $deviceName: - address: $deviceHardwareAddress "
+                                        )
 
-                                        if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
-                                            BluetoothSocketSingleton.socket?.close()
-                                        } else {
+                                        if (deviceName == ARDUINO_DEVICE_NAME) {
+                                            foundDevice = true
+
                                             BluetoothSocketSingleton.socket =
                                                 device.createRfcommSocketToServiceRecord(
                                                     UUID.fromString(
@@ -344,14 +345,16 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                                 }
                                             }
                                         }
-
                                     }
+
+                                    if (!foundDevice) {
+                                        openAlertDialogLoad.value = false
+                                        openAlertDialogDeviceNotFound.value = true
+                                    }
+
                                 }
 
-                                if (!foundDevice) {
-                                    openAlertDialogLoad.value = false
-                                    openAlertDialogDeviceNotFound.value = true
-                                }
+
                             }
 
 
@@ -408,7 +411,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         )
     }
 
-    if (openAlertDialogBluetoothAlreadyActivated.value){
+    if (openAlertDialogBluetoothAlreadyActivated.value) {
         AnimatedAlertDialogWithConfirmButton(
             onConfirmation = { openAlertDialogBluetoothAlreadyActivated.value = false },
             onDismissRequest = { openAlertDialogBluetoothAlreadyActivated.value = false },
