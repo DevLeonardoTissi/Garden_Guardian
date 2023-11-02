@@ -4,7 +4,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.notification.Notification
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
@@ -21,6 +20,8 @@ class BluetoothPlantMonitorService : Service() {
 
     private val notificationManager: NotificationManager by inject()
     private var isReadingData = true
+
+
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
@@ -44,29 +45,29 @@ class BluetoothPlantMonitorService : Service() {
                         val inputStream = it.inputStream
                         val buffer = ByteArray(1024)
                         val bytes = inputStream.read(buffer)
-                        val message = String(buffer, 0, bytes)
-                        Log.i("TAG", "startReadingData: $message")
-
-                        var progress = 0
+                        val message = String(buffer, 0, bytes).trim().toIntOrNull()
 
 
+                        message?.let {
+                            when {
+                                (message < 40) -> {
+                                    _plantState.value = PlantState.LowWater
+                                }
 
-                        when (message) {
-                            "precisa regar" -> {
-                                _plantState.value = PlantState.LowWater
-                                progress = 0
+                                (message in 40..60) -> {
+                                    _plantState.value = PlantState.Alert
+                                }
+
+                                else -> {
+                                    _plantState.value = PlantState.Ok
+                                }
                             }
-                            "quase ok" -> {
-                                _plantState.value = PlantState.Alert
-                                progress = 50
-                            }
-                            "ok" -> {
-                                _plantState.value = PlantState.Ok
-                                progress = 100
-                            }
+
+                            showNotification(message)
+
                         }
 
-                        showNotification(message, calculatePercent(progress))
+
                     }
 
 
@@ -78,21 +79,19 @@ class BluetoothPlantMonitorService : Service() {
         }
     }
 
-    private fun calculatePercent(progress:Int):Int{
-        return ((1023 - progress) * 100 / 1023)
-    }
 
-    private fun showNotification(message:String, progress:Int){
+    private fun showNotification(progress: Int) {
+
         Notification(applicationContext).show(
-            title = "Garden Guardian",
-            description = "$message: $progress%",
+            title = "Umidade do solo: $progress%",
+            description = "Umidade do solo: $progress%",
             iconId = R.drawable.ic_grass,
             isOnGoing = true,
             isAutoCancel = false,
             exclusiveId = Int.MAX_VALUE,
             progress = progress
-
         )
+
     }
 
     private fun stopRead() {
