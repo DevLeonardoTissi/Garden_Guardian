@@ -12,7 +12,7 @@ import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class HomeScreenViewModel(val repository: PlantRepository) : ViewModel() {
+class HomeScreenViewModel(private val repository: PlantRepository) : ViewModel() {
 
 
     val plantState: Flow<PlantState?> = BluetoothPlantMonitorService.plantState

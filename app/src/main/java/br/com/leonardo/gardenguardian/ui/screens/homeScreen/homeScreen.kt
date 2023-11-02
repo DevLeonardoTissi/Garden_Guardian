@@ -294,16 +294,12 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                     var foundDevice = false
 
                     if (bluetoothState == BluetoothState.ENABLED) {
-
                         if (bluetoothPermissionLauncher.allPermissionsGranted) {
-
-
                             CoroutineScope(Dispatchers.IO).launch {
 
                                 if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
                                     BluetoothSocketSingleton.socket?.close()
                                 } else {
-
                                     openAlertDialogLoad.value = true
 
                                     val pairedDevices: Set<BluetoothDevice>? =
@@ -351,12 +347,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                         openAlertDialogLoad.value = false
                                         openAlertDialogDeviceNotFound.value = true
                                     }
-
                                 }
-
-
                             }
-
 
                         } else {
                             bluetoothPermissionLauncher.launchMultiplePermissionRequest()
@@ -463,7 +455,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             imageDescription = ""
         )
     }
-
 
 }
 
