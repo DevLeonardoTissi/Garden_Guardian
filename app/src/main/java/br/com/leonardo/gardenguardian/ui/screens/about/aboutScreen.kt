@@ -102,7 +102,5 @@ fun AboutHomeScreen() {
             )
 
         }
-
-
     }
 }
