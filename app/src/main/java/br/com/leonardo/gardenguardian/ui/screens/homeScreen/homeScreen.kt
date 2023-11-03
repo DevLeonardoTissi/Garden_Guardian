@@ -49,10 +49,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
@@ -60,7 +61,7 @@ import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.components.AnimatedAlertDialogWithConfirmButton
 import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
 import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
-import br.com.leonardo.gardenguardian.ui.components.tryConnectionDeviceAlertDialog
+import br.com.leonardo.gardenguardian.ui.components.NonDismissableAlertDialog
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import br.com.leonardo.gardenguardian.ui.theme.dark_yellow
 import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
@@ -110,7 +111,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
     val openAlertDialogErrorEnableBluetooth = remember { mutableStateOf(false) }
     val openAlertDialogNotSupportBluetooth = remember { mutableStateOf(false) }
-    val openAlertDialogBluetoothEnable = remember { mutableStateOf(false) }
+    val openAlertDialogBluetoothWasEnable = remember { mutableStateOf(false) }
     val openAlertDialogDeviceNotFound = remember { mutableStateOf(false) }
     val openAlertDialogEditPlantImage = remember { mutableStateOf(false) }
     val openAlertDialogLoad = remember { mutableStateOf(false) }
@@ -123,14 +124,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             if (it.resultCode != Activity.RESULT_OK) {
                 openAlertDialogErrorEnableBluetooth.value = true
             } else {
-                openAlertDialogBluetoothEnable.value = true
+                openAlertDialogBluetoothWasEnable.value = true
             }
 
         })
 
     val openBluetoothSettingsLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { }
+    ) {}
 
     val bluetoothState by homeScreenViewModel.bluetoothStatus.collectAsStateWithLifecycle(
         initialValue = BluetoothState.DISABLED
@@ -148,9 +149,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         targetValue = when (bluetoothState) {
             BluetoothState.ENABLED -> md_theme_light_primary
             BluetoothState.DISABLED -> red
-        }, label = "Update Color"
+        }, label = context.getString(R.string.selectColorByBluetoothStatusLabel)
     )
-
 
     val selectColorByPlantState by animateColorAsState(
         targetValue = when (bluetoothDeviceStatus) {
@@ -163,15 +163,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 else -> Color.White
             }
 
-
-        }, label = "Update color"
+        }, label = context.getString(R.string.selectColorByPlantStateLabel)
     )
 
-    val selectColorByDeviceStatus by animateColorAsState(
+    val selectColorByConnectionWithDeviceStatus by animateColorAsState(
         targetValue = when (bluetoothDeviceStatus) {
             DeviceConnectionState.CONNECTED -> md_theme_light_primary
             DeviceConnectionState.DISCONNECTED -> red
-        }, label = "colors by connection state"
+        }, label = context.getString(R.string.selectColorByConnectionWithDeviceStatusLabel)
     )
 
     homeScreenViewModel.checkInitialBluetoothState()
@@ -186,7 +185,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(400.dp, 450.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Box(
@@ -196,7 +196,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                     )
                     .fillMaxWidth()
             ) {
-
 
                 MyAsyncImage(
                     modifier = Modifier
@@ -237,22 +236,28 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                             ), CircleShape
                         )
                 ) {
-                    Icon(Icons.Default.Edit, "", tint = Color.White)
-
+                    Icon(Icons.Default.Edit, contentDescription = context.getString(R.string.iconEditDescription), tint = Color.White)
                 }
-
 
             }
 
-
             Spacer(modifier = Modifier.height(100.dp))
+
+            val textPresentation = when (bluetoothDeviceStatus) {
+                DeviceConnectionState.DISCONNECTED -> context.getString(R.string.connectionDeviceDisconnectedStateText)
+                DeviceConnectionState.CONNECTED -> context.getString(R.string.connectionDeviceConnectedStateText)
+            }
+
             Text(
-                text = LoremIpsum(50).values.first(),
+                text = textPresentation,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(all = 8.dp)
+                    .padding(all = 8.dp),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp,
+                color = selectColorByConnectionWithDeviceStatus
             )
 
             Row(
@@ -262,7 +267,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 IconButton(onClick = {
-
 
                     if (bluetoothPermissionLauncher.allPermissionsGranted) {
 
@@ -284,7 +288,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_bluetooth),
-                        contentDescription = "",
+                        contentDescription = context.getString(R.string.iconBluetoothButton),
                         tint = selectColorByBluetoothStatus,
                         modifier = Modifier
                     )
@@ -295,11 +299,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                     if (bluetoothState == BluetoothState.ENABLED) {
                         if (bluetoothPermissionLauncher.allPermissionsGranted) {
+
                             CoroutineScope(Dispatchers.IO).launch {
 
                                 if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
                                     BluetoothSocketSingleton.socket?.close()
+
                                 } else {
+
                                     openAlertDialogLoad.value = true
 
                                     val pairedDevices: Set<BluetoothDevice>? =
@@ -360,9 +367,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                             "Necessário ligar o bluetooth primeiro para tentar conectar ao dispositivo",
                             Toast.LENGTH_SHORT
                         ).show()
-
                     }
-
 
                 }) {
                     Icon(
@@ -371,14 +376,11 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                 DeviceConnectionState.DISCONNECTED -> R.drawable.ic_link_off
                                 DeviceConnectionState.CONNECTED -> R.drawable.ic_check
                             }
-                        ), contentDescription = "", tint = selectColorByDeviceStatus
+                        ), contentDescription = context.getString(R.string.iconLinkButton), tint = selectColorByConnectionWithDeviceStatus
                     )
-
                 }
             }
         }
-
-
     }
 
 
@@ -388,8 +390,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             onConfirmation = { openAlertDialogNotSupportBluetooth.value = false },
             onDismissRequest = { openAlertDialogNotSupportBluetooth.value = false },
             rawRes = R.raw.sad,
-            text = "Lamentamos, mas seu dispositivo não possui suporte ao bluetooth",
-            title = "Dispositivo sem suporte"
+            text = context.getString(R.string.AlertDialogNotSupportBluetoothText),
+            title = context.getString(R.string.AlertDialogNotSupportBluetoothTitle)
         )
     }
 
@@ -398,8 +400,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             onConfirmation = { openAlertDialogErrorEnableBluetooth.value = false },
             onDismissRequest = { openAlertDialogErrorEnableBluetooth.value = false },
             rawRes = R.raw.error,
-            text = "Erro ao ativar bluetooth",
-            title = "Erro na ativação"
+            text = context.getString(R.string.AlertDialogErrorEnableBluetoothText),
+            title = context.getString(R.string.AlertDialogErrorEnableBluetoothTitle)
         )
     }
 
@@ -408,19 +410,19 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             onConfirmation = { openAlertDialogBluetoothAlreadyActivated.value = false },
             onDismissRequest = { openAlertDialogBluetoothAlreadyActivated.value = false },
             rawRes = R.raw.bluetooth,
-            title = "Bluetooth já ativado",
-            text = "Seu dispositivo Bluetooth já está ativado"
+            title = context.getString(R.string.AlertDialogBluetoothAlreadyActivatedTitle),
+            text = context.getString(R.string.AlertDialogBluetoothAlreadyActivatedText)
         )
     }
 
 
-    if (openAlertDialogBluetoothEnable.value) {
+    if (openAlertDialogBluetoothWasEnable.value) {
         AnimatedAlertDialogWithConfirmButton(
-            onConfirmation = { openAlertDialogBluetoothEnable.value = false },
-            onDismissRequest = { openAlertDialogBluetoothEnable.value = false },
+            onConfirmation = { openAlertDialogBluetoothWasEnable.value = false },
+            onDismissRequest = { openAlertDialogBluetoothWasEnable.value = false },
             rawRes = R.raw.bluetooth_enable,
-            text = "Bluetooth Ativado",
-            title = "Sucesso na ativação"
+            text = context.getString(R.string.AlertDialogBluetoothWasEnableText),
+            title = context.getString(R.string.AlertDialogBluetoothWasEnableTitle)
         )
     }
 
@@ -434,14 +436,14 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             },
             onDismissRequest = { openAlertDialogDeviceNotFound.value = false },
             rawRes = R.raw.bluetooth_paired,
-            text = "Para prosseguir, procure pelo dispositivo $ARDUINO_DEVICE_NAME e faça o pareamento ",
-            title = "Dispositivo não pareado"
+            text = context.getString(R.string.AlertDialogDeviceNotFoundText, ARDUINO_DEVICE_NAME),
+            title = context.getString(R.string.AlertDialogDeviceNotFoundTitle)
         )
     }
 
 
     if (openAlertDialogLoad.value) {
-        tryConnectionDeviceAlertDialog()
+        NonDismissableAlertDialog(text = context.getString(R.string.alertDialogTryConnectionText), animationId = R.raw.bluetooth)
     }
 
     if (openAlertDialogEditPlantImage.value) {
@@ -452,7 +454,11 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 homeScreenViewModel.updateImg(newUrl)
             },
             url = plant?.img,
-            imageDescription = ""
+            iconId = R.drawable.ic_grass,
+            iconDescription = context.getString(R.string.AlertDialogEditPlantImageIconDescription),
+            labelText = context.getString(R.string.AlertDialogEditPlantImagePlaceholder),
+            placeholderText = context.getString(R.string.AlertDialogEditPlantImageLabel),
+            text = context.getString(R.string.AlertDialogEditPlantImageText)
         )
     }
 

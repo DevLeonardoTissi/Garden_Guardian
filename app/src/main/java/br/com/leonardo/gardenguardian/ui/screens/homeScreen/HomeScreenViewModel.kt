@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 
 class HomeScreenViewModel(private val repository: PlantRepository) : ViewModel() {
 
-
     val plantState: Flow<PlantState?> = BluetoothPlantMonitorService.plantState
 
     val deviceConnectionState: Flow<DeviceConnectionState> = BluetoothBroadcastReceiver.deviceConnectionState

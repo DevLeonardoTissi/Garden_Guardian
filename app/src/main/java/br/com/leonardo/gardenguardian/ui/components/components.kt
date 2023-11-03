@@ -27,7 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
@@ -57,15 +60,15 @@ fun MyAlertDialog(
 
 
 @Composable
-fun tryConnectionDeviceAlertDialog() {
+fun NonDismissableAlertDialog(text: String, animationId: Int) {
 
-    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.bluetooth))
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(animationId))
     Dialog(onDismissRequest = {}) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -83,8 +86,11 @@ fun tryConnectionDeviceAlertDialog() {
                 )
 
                 Text(
-                    text = "Tentendo conectar ao dispositivo",
+                    text = text,
                     modifier = Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp
                 )
             }
         }
@@ -122,6 +128,9 @@ fun AnimatedAlertDialogWithConfirmButton(
                     Text(
                         text = it,
                         modifier = Modifier.padding(16.dp),
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp
                     )
                 }
 
@@ -135,6 +144,7 @@ fun AnimatedAlertDialogWithConfirmButton(
                 Text(
                     text = text,
                     modifier = Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center
                 )
 
 
@@ -154,7 +164,11 @@ fun AnimatedAlertDialogWithConfirmButton(
 fun SearchTextField(
     searchText: String?,
     onSearchChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    labelText: String,
+    placeholderText: String,
+    iconId: Int,
+    iconDescription: String
 ) {
     OutlinedTextField(
         value = searchText ?: "",
@@ -165,16 +179,16 @@ fun SearchTextField(
         shape = RoundedCornerShape(100),
         leadingIcon = {
             Icon(
-                painter = painterResource(id = R.drawable.ic_grass),
-                contentDescription = "ícone de lupa",
+                painter = painterResource(id = iconId),
+                contentDescription = iconDescription,
                 tint = md_theme_light_primary
             )
         },
         label = {
-            Text(text = "Link da imagem")
+            Text(text = labelText)
         },
         placeholder = {
-            Text("Link da imagem")
+            Text(placeholderText)
         })
 }
 
@@ -198,7 +212,11 @@ fun DialogWithImage(
     onDismissRequest: () -> Unit,
     onConfirmation: (newUrl: String?) -> Unit,
     url: String?,
-    imageDescription: String,
+    iconId: Int,
+    iconDescription: String,
+    labelText: String,
+    placeholderText: String,
+    text: String
 ) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
@@ -221,23 +239,29 @@ fun DialogWithImage(
                 if (!newUrl.isNullOrBlank()) {
                     MyAsyncImage(
                         model = newUrl,
-                        description = imageDescription,
+                        description = "imageDescription",
                         modifier = Modifier, contentScale = ContentScale.Fit
                     )
                 }
 
 
                 Text(
-                    text = "Cole o link da imagem da sua planta",
+                    text = text,
                     modifier = Modifier.padding(16.dp),
-                )
+                    textAlign = TextAlign.Center,
+
+                    )
 
                 SearchTextField(
                     searchText = newUrl,
                     onSearchChange = { newUrl = it },
                     modifier = Modifier
                         .height(80.dp)
-                        .padding(10.dp)
+                        .padding(10.dp),
+                    iconId = iconId,
+                    iconDescription = iconDescription,
+                    labelText = labelText,
+                    placeholderText = placeholderText,
                 )
 
 

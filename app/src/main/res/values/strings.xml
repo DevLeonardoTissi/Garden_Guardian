@@ -5,4 +5,67 @@
     <string name="channel_name">Principal</string>
     <string name="channel_description">Publicações principais do App</string>
 
+
+    <!-- Home Screen -->
+    <string name="selectColorByBluetoothStatusLabel">Color by Bluetooth status</string>
+    <string name="selectColorByPlantStateLabel">Color by plant state</string>
+    <string name="selectColorByConnectionWithDeviceStatusLabel"> Color by Connection with device status</string>
+    <string name="iconEditDescription">pencil icon to inform the possibility of editing</string>
+    <string name="connectionDeviceConnectedStateText">Dispositivo Conectado</string>
+    <string name="connectionDeviceDisconnectedStateText">Dispositivo Desconectado</string>
+    <string name="iconBluetoothButton">bluetooth icon to show that, by clicking this button, you will be activating your device bluetooth</string>
+    <string name="iconLinkButton">link icon to show that by clicking this button you will be connecting with the arduino device</string>
+
+
+    <!-- Alert Dialog NotSupport Bluetooth -->
+    <string name="AlertDialogNotSupportBluetoothTitle">Dispositivo sem suporte</string>
+    <string name="AlertDialogNotSupportBluetoothText">Lamentamos, mas seu dispositivo não possui suporte ao bluetooth</string>
+
+
+    <!-- Alert Dialog Error Enable Bluetooth -->
+    <string name="AlertDialogErrorEnableBluetoothTitle">Erro na ativação</string>
+    <string name="AlertDialogErrorEnableBluetoothText">Houve um erro ao ativar o bluetooth</string>
+
+    <!-- Alert Dialog Bluetooth Already Activated -->
+    <string name="AlertDialogBluetoothAlreadyActivatedTitle">Bluetooth já ativado</string>
+    <string name="AlertDialogBluetoothAlreadyActivatedText">O Bluetooth do dispositivo já está ativado</string>
+
+
+    <!-- Alert Dialog Bluetooth Was Enable -->
+    <string name="AlertDialogBluetoothWasEnableTitle">Bluetooth Ativado</string>
+    <string name="AlertDialogBluetoothWasEnableText">Sucesso na ativação</string>
+
+
+    <!-- Alert Dialog Device Not Found -->
+    <string name="AlertDialogDeviceNotFoundTitle">Dispositivo não pareado</string>
+    <string name="AlertDialogDeviceNotFoundText">Para prosseguir, procure pelo dispositivo %1$s e faça o pareamento</string>
+
+    <!-- Alert Dialog Edit Plant Image -->
+    <string name="AlertDialogEditPlantImageText">Cole o link da imagem da sua planta</string>
+    <string name="AlertDialogEditPlantImageIconDescription">grass icon</string>
+    <string name="AlertDialogEditPlantImagePlaceholder">Link da imagem</string>
+    <string name="AlertDialogEditPlantImageLabel">URL</string>
+
+
+    <!-- Alert Dialog Try Connection -->
+    <string name="alertDialogTryConnectionText">Tentando conectar ao dispositivo</string>
+
+    <!-- Verification Notification -->
+    <string name="VerificationNotificationTitle">Umidade do solo: %s%% </string>
+    <string name="VerificationNotificationDescription">Verificando em tempo real</string>
+
+
+    <!-- Common -->
+    <string name="CommonOk">OK</string>
+    <string name="CommonConfirm">Confirmar</string>
+    <string name="CommonDismiss">Cancelar</string>
+
+
+
+
+
+
+
+
+
 </resources>

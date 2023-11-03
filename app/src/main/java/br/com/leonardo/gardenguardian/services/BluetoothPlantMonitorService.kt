@@ -21,7 +21,6 @@ class BluetoothPlantMonitorService : Service() {
     private val notificationManager: NotificationManager by inject()
     private var isReadingData = true
 
-
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
@@ -41,20 +40,20 @@ class BluetoothPlantMonitorService : Service() {
         CoroutineScope(Dispatchers.IO).launch {
             while (isReadingData) {
                 try {
+
                     BluetoothSocketSingleton.socket?.let {
                         val inputStream = it.inputStream
                         val buffer = ByteArray(1024)
                         val bytes = inputStream.read(buffer)
-                        val message = String(buffer, 0, bytes).trim().toIntOrNull()
+                        val humidityPercentage = String(buffer, 0, bytes).trim().toIntOrNull()
 
-
-                        message?.let {
+                        humidityPercentage?.let {
                             when {
-                                (message < 40) -> {
+                                (humidityPercentage < 40) -> {
                                     _plantState.value = PlantState.LowWater
                                 }
 
-                                (message in 40..60) -> {
+                                (humidityPercentage in 40..60) -> {
                                     _plantState.value = PlantState.Alert
                                 }
 
@@ -63,33 +62,29 @@ class BluetoothPlantMonitorService : Service() {
                                 }
                             }
 
-                            showNotification(message)
+                            showNotification(humidityPercentage)
 
                         }
-
-
                     }
-
 
                 } catch (_: IOException) {
                     stopSelf()
                 }
             }
-
         }
     }
 
 
-    private fun showNotification(progress: Int) {
+    private fun showNotification(humidityPercent: Int) {
 
         Notification(applicationContext).show(
-            title = "Umidade do solo: $progress%",
-            description = "Umidade do solo: $progress%",
+            title = applicationContext.getString(R.string.VerificationNotificationTitle, humidityPercent.toString()),
+            description = applicationContext.getString(R.string.VerificationNotificationDescription),
             iconId = R.drawable.ic_grass,
             isOnGoing = true,
             isAutoCancel = false,
             exclusiveId = Int.MAX_VALUE,
-            progress = progress
+            progress = humidityPercent
         )
 
     }
