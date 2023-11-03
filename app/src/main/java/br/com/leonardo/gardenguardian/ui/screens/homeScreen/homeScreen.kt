@@ -8,8 +8,6 @@ import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
@@ -62,6 +60,7 @@ import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
 import br.com.leonardo.gardenguardian.ui.DEFAULT_IMAGE_URL
 import br.com.leonardo.gardenguardian.ui.components.AnimatedAlertDialogWithConfirmButton
 import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
+import br.com.leonardo.gardenguardian.ui.components.ModalBottomSheetWithAnimation
 import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
 import br.com.leonardo.gardenguardian.ui.components.NonDismissableAlertDialog
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
@@ -77,7 +76,6 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import java.io.IOException
 import java.util.UUID
@@ -118,6 +116,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     val openAlertDialogEditPlantImage = remember { mutableStateOf(false) }
     val openAlertDialogLoad = remember { mutableStateOf(false) }
     val openAlertDialogBluetoothAlreadyActivated = remember { mutableStateOf(false) }
+    val openBottomSheetConnectionError = remember { mutableStateOf(false) }
+    val openBottomSheetEnableBluetoothFirst = remember { mutableStateOf(false) }
 
     val enableBluetoothLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -320,11 +320,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
                                     pairedDevices?.forEach { device ->
                                         val deviceName = device.name
-                                        val deviceHardwareAddress = device.address
-                                        Log.i(
-                                            "dispositivos",
-                                            "nome: $deviceName: - address: $deviceHardwareAddress "
-                                        )
 
                                         if (deviceName == ARDUINO_DEVICE_NAME) {
                                             foundDevice = true
@@ -341,17 +336,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                             } catch (e: IOException) {
                                                 openAlertDialogLoad.value = false
 
-                                                withContext(Dispatchers.Main) {
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Não foi possível conectar ao arduino",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                    Log.i(
-                                                        "dispositivos",
-                                                        "não conectado ao arduino "
-                                                    )
-                                                }
+                                                openBottomSheetConnectionError.value = true
+
                                             }
                                         }
                                     }
@@ -368,11 +354,9 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                         }
 
                     } else {
-                        Toast.makeText(
-                            context,
-                            "Necessário ligar o bluetooth primeiro para tentar conectar ao dispositivo",
-                            Toast.LENGTH_SHORT
-                        ).show()
+
+                        openBottomSheetEnableBluetoothFirst.value = true
+
                     }
 
                 }) {
@@ -473,6 +457,25 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
         )
     }
+
+    if (openBottomSheetConnectionError.value) {
+
+        ModalBottomSheetWithAnimation(
+            onDismissRequest = { openBottomSheetConnectionError.value = false },
+            rawRes = R.raw.error,
+            text = context.getString(R.string.BottomSheetErrorConnectionText)
+        )
+    }
+
+    if (openBottomSheetEnableBluetoothFirst.value) {
+
+        ModalBottomSheetWithAnimation(
+            onDismissRequest = { openBottomSheetEnableBluetoothFirst.value = false },
+            rawRes = R.raw.bluetooth,
+            text = context.getString(R.string.BottomSheetEnableBluetoothFirstText)
+        )
+    }
+
 
 }
 

@@ -14,7 +14,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -293,5 +295,41 @@ fun DialogWithImage(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ModalBottomSheetWithAnimation(onDismissRequest: () -> Unit, rawRes: Int, text: String) {
+    ModalBottomSheet(
+        onDismissRequest = { onDismissRequest() }
+
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(rawRes))
+
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(70.dp)
+            )
+
+            Text(
+                text = text,
+                modifier = Modifier.padding(16.dp),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp
+            )
+
+        }
+
+
     }
 }

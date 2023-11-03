@@ -62,6 +62,13 @@
     <string name="FloatingActionButtonIconDescriptionAbout">ícone de info sinalizando que, ao clicar, você será direcionado para a tela de informações</string>
     <string name="FloatingActionButtonIconDescriptionBack">ícone de info sinalizando que, ao clicar, você será direcionado para a tela de home</string>
 
+    <!-- Bottom Sheet Error Connection -->
+    <string name="BottomSheetErrorConnectionText">Não foi possível estabelecer conexão com o dispositivo. Tente novamente</string>
+
+    <!-- Bottom Sheet Enable Bluetooth First -->
+    <string name="BottomSheetEnableBluetoothFirstText">Necessário ligar o bluetooth primeiro para tentar conectar ao dispositivo</string>
+
+
 
     <!-- Common -->
     <string name="commonOk">OK</string>
