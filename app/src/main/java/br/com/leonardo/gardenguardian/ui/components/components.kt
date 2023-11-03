@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -168,7 +170,8 @@ fun SearchTextField(
     labelText: String,
     placeholderText: String,
     iconId: Int,
-    iconDescription: String
+    iconDescription: String,
+    keyboardOptions: KeyboardOptions?
 ) {
     OutlinedTextField(
         value = searchText ?: "",
@@ -176,7 +179,7 @@ fun SearchTextField(
             onSearchChange(newValue)
         },
         modifier,
-        shape = RoundedCornerShape(100),
+
         leadingIcon = {
             Icon(
                 painter = painterResource(id = iconId),
@@ -189,7 +192,9 @@ fun SearchTextField(
         },
         placeholder = {
             Text(placeholderText)
-        })
+        },
+        keyboardOptions = keyboardOptions ?: KeyboardOptions(keyboardType = KeyboardType.Text)
+    )
 }
 
 @Composable
@@ -216,7 +221,8 @@ fun DialogWithImage(
     iconDescription: String,
     labelText: String,
     placeholderText: String,
-    text: String
+    text: String,
+    keyboardOptions: KeyboardOptions? = null
 ) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
@@ -262,6 +268,7 @@ fun DialogWithImage(
                     iconDescription = iconDescription,
                     labelText = labelText,
                     placeholderText = placeholderText,
+                    keyboardOptions = keyboardOptions
                 )
 
 
