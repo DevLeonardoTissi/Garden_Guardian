@@ -454,7 +454,8 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             labelText = context.getString(R.string.AlertDialogEditPlantImagePlaceholder),
             placeholderText = context.getString(R.string.AlertDialogEditPlantImageLabel),
             text = context.getString(R.string.AlertDialogEditPlantImageText),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+            context = context
         )
     }
 

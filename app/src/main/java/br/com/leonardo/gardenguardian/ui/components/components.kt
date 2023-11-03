@@ -1,5 +1,6 @@
 package br.com.leonardo.gardenguardian.ui.components
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -204,7 +205,8 @@ fun DialogWithImage(
     labelText: String,
     placeholderText: String,
     text: String,
-    keyboardOptions: KeyboardOptions? = null
+    keyboardOptions: KeyboardOptions? = null,
+    context: Context
 ) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
@@ -227,7 +229,7 @@ fun DialogWithImage(
                 if (!newUrl.isNullOrBlank()) {
                     MyAsyncImage(
                         model = newUrl,
-                        description = "imageDescription",
+                        description = null,
                         modifier = Modifier, contentScale = ContentScale.Fit
                     )
                 }
@@ -254,7 +256,6 @@ fun DialogWithImage(
                 )
 
 
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -264,13 +265,13 @@ fun DialogWithImage(
                         onClick = { onDismissRequest() },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Dismiss")
+                        Text(context.getString(R.string.commonDismiss))
                     }
                     TextButton(
                         onClick = { onConfirmation(newUrl) },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Confirm")
+                        Text(context.getString(R.string.commonConfirm))
                     }
                 }
             }
