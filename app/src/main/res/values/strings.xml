@@ -38,7 +38,8 @@
 
     <!-- Alert Dialog Device Not Found -->
     <string name="AlertDialogDeviceNotFoundTitle">Dispositivo não pareado</string>
-    <string name="AlertDialogDeviceNotFoundText">Para prosseguir, procure pelo dispositivo %1$s e faça o pareamento</string>
+    <string name="AlertDialogDeviceNotFoundText">Para continuar, localize o dispositivo %1$s e faça o emparelhamento. Se for solicitada uma senha durante o processo, insira: 1234.</string>
+
 
     <!-- Alert Dialog Edit Plant Image -->
     <string name="AlertDialogEditPlantImageText">Cole o link da imagem da sua planta</string>
@@ -59,13 +60,6 @@
     <string name="CommonOk">OK</string>
     <string name="CommonConfirm">Confirmar</string>
     <string name="CommonDismiss">Cancelar</string>
-
-
-
-
-
-
-
 
 
 </resources>

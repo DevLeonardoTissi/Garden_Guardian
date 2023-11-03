@@ -238,7 +238,11 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                             ), CircleShape
                         )
                 ) {
-                    Icon(Icons.Default.Edit, contentDescription = context.getString(R.string.iconEditDescription), tint = Color.White)
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = context.getString(R.string.iconEditDescription),
+                        tint = Color.White
+                    )
                 }
 
             }
@@ -378,7 +382,9 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                                 DeviceConnectionState.DISCONNECTED -> R.drawable.ic_link_off
                                 DeviceConnectionState.CONNECTED -> R.drawable.ic_check
                             }
-                        ), contentDescription = context.getString(R.string.iconLinkButton), tint = selectColorByConnectionWithDeviceStatus
+                        ),
+                        contentDescription = context.getString(R.string.iconLinkButton),
+                        tint = selectColorByConnectionWithDeviceStatus
                     )
                 }
             }
@@ -445,7 +451,10 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
 
 
     if (openAlertDialogLoad.value) {
-        NonDismissableAlertDialog(text = context.getString(R.string.alertDialogTryConnectionText), animationId = R.raw.bluetooth)
+        NonDismissableAlertDialog(
+            text = context.getString(R.string.alertDialogTryConnectionText),
+            animationId = R.raw.bluetooth
+        )
     }
 
     if (openAlertDialogEditPlantImage.value) {
