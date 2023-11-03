@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "680845086564",
+    "project_id": "garden-guardian-deb9d",
+    "storage_bucket": "garden-guardian-deb9d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680845086564:android:b2ecb86b5e8af85ce9b471",
+        "android_client_info": {
+          "package_name": "br.com.leonardo.gardenguardian"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhGlwZv0ltIgxOxFfJLbkPST0DrYPNk74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
