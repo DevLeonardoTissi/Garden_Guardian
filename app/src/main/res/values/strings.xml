@@ -55,11 +55,18 @@
     <string name="VerificationNotificationTitle">Umidade do solo: %s%% </string>
     <string name="VerificationNotificationDescription">Verificando em tempo real</string>
 
+    <!-- About Screen -->
+    <string name="presentationTextAboutScreen">Este aplicativo foi criado com o propósito de explorar e aprimorar meus conhecimentos em Jetpack Compose. Acesse meu repositório e perfil no LinkedIn clicando nos ícones abaixo.</string>
+
+    <!-- Main Activity -->
+    <string name="FloatingActionButtonIconDescriptionAbout">ícone de info sinalizando que, ao clicar, você será direcionado para a tela de informações</string>
+    <string name="FloatingActionButtonIconDescriptionBack">ícone de info sinalizando que, ao clicar, você será direcionado para a tela de home</string>
+
 
     <!-- Common -->
-    <string name="CommonOk">OK</string>
-    <string name="CommonConfirm">Confirmar</string>
-    <string name="CommonDismiss">Cancelar</string>
+    <string name="commonOk">OK</string>
+    <string name="commonConfirm">Confirmar</string>
+    <string name="commonDismiss">Cancelar</string>
 
 
 </resources>
