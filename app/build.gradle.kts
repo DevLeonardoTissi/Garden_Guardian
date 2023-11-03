@@ -75,7 +75,11 @@ dependencies {
     val lifecycleVersion = "2.6.2"
     implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
 
-    implementation("com.airbnb.android:lottie-compose:6.1.0")
+    val lottieVersion = "6.1.0"
+    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
+
+    val googleFontsVersion = "1.5.4"
+    implementation("androidx.compose.ui:ui-text-google-fonts:$googleFontsVersion")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
