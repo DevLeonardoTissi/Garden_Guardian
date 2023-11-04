@@ -23,7 +23,7 @@ A aplicação também incorpora o Broadcast Receiver para monitorar o estado do 
 
 
 
-
+<p float="left" align="center">
 
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/01.png">
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/02.png">
@@ -47,6 +47,8 @@ A aplicação também incorpora o Broadcast Receiver para monitorar o estado do 
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/20.png">
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/21.png">
 <img alt = "screenshot" width = "80%" src = "readme_files/screenshot/22.png">
+
+</p>
 
 
 ## Arduino Scheme
