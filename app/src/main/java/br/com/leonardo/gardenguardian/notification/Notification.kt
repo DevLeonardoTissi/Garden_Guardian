@@ -22,12 +22,6 @@ class Notification(private val context:Context): KoinComponent {
 
     private val notificationManager : NotificationManager by inject()
 
-    companion object {
-        var id = 1
-            private set
-    }
-
-
     fun show(
         title: String,
         description: String,
@@ -36,13 +30,7 @@ class Notification(private val context:Context): KoinComponent {
         isOnGoing: Boolean? = false,
         isAutoCancel: Boolean? = true,
         progress: Int? = null,
-        exclusiveId: Int? = null,
-        actionIcon: Int? = null,
-        actionTitle: String? = null,
-        actionIntent: PendingIntent? = null,
-        secondActionIcon: Int? = null,
-        secondActionTitle: String? = null,
-        secondActionIntent: PendingIntent? = null,
+        exclusiveId: Int,
         contentIntent: PendingIntent? = null
     ){
         CoroutineScope(Dispatchers.IO).launch {
@@ -57,17 +45,11 @@ class Notification(private val context:Context): KoinComponent {
                     isOnGoing ?: false,
                     isAutoCancel ?: true,
                     progress,
-                    actionIcon,
-                    actionTitle,
-                    actionIntent,
-                    secondActionIcon,
-                    secondActionTitle,
-                    secondActionIntent,
                     contentIntent
                 )
 
-            notificationManager.notify(exclusiveId ?: id, notification)
-            exclusiveId ?: id++
+            notificationManager.notify(exclusiveId , notification)
+
         }
     }
 
@@ -86,12 +68,6 @@ class Notification(private val context:Context): KoinComponent {
         isOnGoing: Boolean = false,
         isAutoCancel: Boolean = true,
         progress: Int? = null,
-        actionIcon: Int? = null,
-        actionTitle: String? = null,
-        actionIntent: PendingIntent? = null,
-        secondActionIcon: Int? = null,
-        secondActionTitle: String? = null,
-        secondActionIntent: PendingIntent? = null,
         contentIntent: PendingIntent? = null
 
 
@@ -113,9 +89,6 @@ class Notification(private val context:Context): KoinComponent {
             builder.setProgress(100, progressNonNull, false)
         }
 
-        addActionIfNotNull(builder, actionIcon, actionTitle, actionIntent)
-        addActionIfNotNull(builder, secondActionIcon, secondActionTitle, secondActionIntent)
-
         return builder.build()
     }
 
@@ -124,14 +97,5 @@ class Notification(private val context:Context): KoinComponent {
             NotificationCompat.BigPictureStyle().bigPicture(it)
         } ?: NotificationCompat.BigTextStyle().bigText(description)
     }
-
-    private fun addActionIfNotNull(builder: NotificationCompat.Builder, icon: Int?, title: String?, intent: PendingIntent?) {
-        if (listOf(icon, title, intent).all { it != null }) {
-            builder.addAction(icon!!, title, intent)
-        }
-    }
-
-
-
 
 }

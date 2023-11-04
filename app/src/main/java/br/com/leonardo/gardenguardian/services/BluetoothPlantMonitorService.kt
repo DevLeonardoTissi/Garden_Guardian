@@ -1,11 +1,13 @@
 package br.com.leonardo.gardenguardian.services
 
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.notification.Notification
+import br.com.leonardo.gardenguardian.ui.activity.MainActivity
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import kotlinx.coroutines.CoroutineScope
@@ -77,14 +79,26 @@ class BluetoothPlantMonitorService : Service() {
 
     private fun showNotification(humidityPercent: Int) {
 
+
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+            applicationContext, 0, Intent(applicationContext, MainActivity::class.java).apply {
+                this.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            },
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         Notification(applicationContext).show(
-            title = applicationContext.getString(R.string.VerificationNotificationTitle, humidityPercent.toString()),
+            title = applicationContext.getString(
+                R.string.VerificationNotificationTitle,
+                humidityPercent.toString()
+            ),
             description = applicationContext.getString(R.string.VerificationNotificationDescription),
             iconId = R.drawable.ic_grass,
             isOnGoing = true,
             isAutoCancel = false,
             exclusiveId = Int.MAX_VALUE,
-            progress = humidityPercent
+            progress = humidityPercent,
+            contentIntent = pendingIntent
         )
 
     }
