@@ -21,7 +21,10 @@ A aplicação também incorpora o Broadcast Receiver para monitorar o estado do 
 
 </br>
 
-<p float="left" align="center">
+
+
+
+
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/01.png">
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/02.png">
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/03.png">
@@ -43,15 +46,24 @@ A aplicação também incorpora o Broadcast Receiver para monitorar o estado do 
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/19.png">
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/20.png">
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/21.png">
-<img alt = "screenshot" width = "100%" src = "readme_files/screenshot/22.png">
+<img alt = "screenshot" width = "80%" src = "readme_files/screenshot/22.png">
+
+
+## Arduino Scheme
+
+<img alt = "screenshot" width = "100%" src = "arduino_files/scheme.png">
+<img alt = "screenshot" width = "100%" src = "arduino_files/arduino_photo.png">
 
 
 
 
 
-</p>
+
+## Downloads
 
 Faça o download da <a href="/app/release/app-release.apk?raw=true">APK diretamente</a>. Você pode ver <a href="https://www.google.com/search?q=como+instalar+um+apk+no+android">aqui</a> como instalar uma APK no seu aparelho android.
+
+Download do <a href="/arduino_files/garden_guardian_arduino_file.ino?raw=true">Arquivo Arduino</a>. 
 
 ## Tecnologias usadas e bibliotecas de código aberto
 
@@ -74,6 +86,14 @@ Faça o download da <a href="/app/release/app-release.apk?raw=true">APK diretame
   - MVVM (View - ViewModel - Model)
   - Comunicação da ViewModel com a View através do Flow
   - Repositórios para comunicação entre o viewModel e o Banco de dados
+
+- Arduino
+  - Placa: Arduino Mega
+  - Sensor de Umidade
+  - Módulo bluetooth HC-06
+  - RGB Led
+  - Leds ( amarelo, vermelho e azul )
+  - Buzzer
   
 
 - Bibliotecas
