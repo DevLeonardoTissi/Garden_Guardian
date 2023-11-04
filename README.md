@@ -1,4 +1,4 @@
-# Garden Guardian<h1 align="center">Student Diary</h1>
+# Garden Guardian<h1 align="center">Garden Guardian</h1>
 
 <p align="center">
    <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
@@ -43,7 +43,7 @@ A aplicação também incorpora o Broadcast Receiver para monitorar o estado do 
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/19.png">
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/20.png">
 <img alt = "screenshot" width = "20%" src = "readme_files/screenshot/21.png">
-
+<img alt = "screenshot" width = "100%" src = "readme_files/screenshot/22.png">
 
 
 
@@ -59,18 +59,12 @@ Faça o download da <a href="/app/release/app-release.apk?raw=true">APK diretame
 - [Linguagem Kotlin](https://kotlinlang.org/)
 
 - Jetpack
+  - Compose - kit de ferramentas moderno recomendado pelo Android para criar UI nativa.
   - Lifecycle: Observe os ciclos de vida do Android e manipule os estados da interface do usuário após as alterações do ciclo de vida.
   - ViewModel: Gerencia o detentor de dados relacionados à interface do usuário e o ciclo de vida. Permite que os dados sobrevivam a alterações de configuração, como rotações de tela.
-  - ViewBinding: Liga os componentes do XML no Kotlin através de uma classe que garante segurança de tipo e outras vantagens.
-  - Custom Views: View customizadas feitas do zero usando XML.
   - LifecycleScope: Para execuções em coroutine.
-  - DataStore: Armazenamento de dados em cache.
-  - View Binding - Gerenciar views.
-  - Fragment 
   - Navigation - Criação e estruturação da IU do app, gerenciando links diretos e navegação entre telas.
   - Room - Criação e gerenciamento de dados persistentes em um banco de dados SQLite
-  - Work Manager - Gerenciar tarefas em segundo plano baseadas em restrições
-  - Biometric - Autenticação com biometria ou credenciais do dispositivo
   - Browser - Exibir páginas da web no navegador padrão do usuário
   - Coroutines
   
@@ -78,69 +72,56 @@ Faça o download da <a href="/app/release/app-release.apk?raw=true">APK diretame
  
 - Arquitetura
   - MVVM (View - ViewModel - Model)
-  - Comunicação da ViewModel com a View através de LiveData
-  - Repositórios para comunicação entre o viewModel e o Retrofit
+  - Comunicação da ViewModel com a View através do Flow
+  - Repositórios para comunicação entre o viewModel e o Banco de dados
   
 
 - Bibliotecas
   - [Firebase:](https://firebase.google.com/) Conjunto de serviços da Google fortemente indicados para o desenvolvimento Android.
-  - [Retrofit2:](https://github.com/square/retrofit) Para realizar requisições seguindo o padrão HTTP.
+  - [Firebase Crashlytics:](https://firebase.google.com/docs/crashlytics) Para insights úteis e claros sobre os problemas do app.
   - [Koin:](https://insert-koin.io/) Para Injeção de dependência
   - [Coil:](https://github.com/coil-kt/coil) Para load de imagens a partir da URL.
-  - [Lottie Animation:](https://lottiefiles.com/) Animações para XML.
-  - [Google auth:](https://firebase.google.com/docs/auth/android/google-signin?hl=pt-br) Autenticação através da conta Google.
-  - [Facebook auth:](https://developers.facebook.com/docs/facebook-login/overview) Autenticação através da conta Google
+  - [Lottie Animation:](https://lottiefiles.com/) Animações.
 
- 
  
 
 ## Arquitetura
 
-**Student Diary** utiliza a arquitetura MVVM e o padrão de Repositories, que segue as [recomendações oficiais do Google](https://developer.android.com/topic/architecture).
+**Garden Guardian** utiliza a arquitetura MVVM e o padrão de Repositories, que segue as [recomendações oficiais do Google](https://developer.android.com/topic/architecture).
 </br></br>
-
-<div align="center" style=" width: 100%; background-color: white; ">
-<img alt = "screenshot" width = "50%" src = "arquivos_readme/arquitetura.png">
-</div>
-<br>
-
-## API Utilizada
-
-- [Dicionário API:](https://github.com/DevLeonardoTissi/DicionarioAPI)  Api feita por mim capaz de realizar consultas ao site Dicio.com.br
 
 
 ## Features
+### Jetpack Compose
 ### Firebase Services
+### Firebase Crashlytics
 ### Room database
-### Work manager
 ### Services
 ### Broadcast Receiver
-### Data Store
 ### Material Design Components
 ### View Binding
 ### Navigation
+
 
 <br>
 
 <div align="center" style=" width: 100%; display: inline-block;  justify-content: space-between;">
   
-<img src="arquivos_readme/gif/00.gif" width="25%"/>
-<img src="arquivos_readme/gif/01.gif" width="25%"/>
-<img src="arquivos_readme/gif/02.gif" width="25%"/>
-<img src="arquivos_readme/gif/03.gif" width="25%"/>
-<img src="arquivos_readme/gif/04.gif" width="25%"/>
-<img src="arquivos_readme/gif/05.gif" width="25%"/>
-<img src="arquivos_readme/gif/06.gif" width="25%"/>
-<img src="arquivos_readme/gif/07.gif" width="25%"/>
-<img src="arquivos_readme/gif/08.gif" width="25%"/>
-<img src="arquivos_readme/gif/09.gif" width="25%"/>
-<img src="arquivos_readme/gif/10.gif" width="25%"/>
-<img src="arquivos_readme/gif/11.gif" width="25%"/>
-<img src="arquivos_readme/gif/12.gif" width="25%"/>
-<img src="arquivos_readme/gif/13.gif" width="25%"/>
-<img src="arquivos_readme/gif/14.gif" width="25%"/>
-<img src="arquivos_readme/gif/15.gif" width="25%"/>
-<img src="arquivos_readme/gif/16.gif" width="25%"/>
+<img src="readme_files/gif/01.gif" width="25%"/>
+<img src="readme_files/gif/02.gif" width="25%"/>
+<img src="readme_files/gif/03.gif" width="25%"/>
+<img src="readme_files/gif/04.gif" width="25%"/>
+<img src="readme_files/gif/05.gif" width="25%"/>
+<img src="readme_files/gif/06.gif" width="25%"/>
+<img src="readme_files/gif/07.gif" width="25%"/>
+<img src="readme_files/gif/08.gif" width="25%"/>
+<img src="readme_files/gif/09.gif" width="25%"/>
+<img src="readme_files/gif/10.gif" width="25%"/>
+<img src="readme_files/gif/11.gif" width="25%"/>
+<img src="readme_files/gif/12.gif" width="25%"/>
+<img src="readme_files/gif/13.gif" width="25%"/>
+
+
 
 </div>
 
