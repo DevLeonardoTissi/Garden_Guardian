@@ -20,16 +20,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.broadcastReceiver.BluetoothBroadcastReceiver
-import br.com.leonardo.gardenguardian.ui.screens.about.AboutHomeScreen
+import br.com.leonardo.gardenguardian.navigation.GardenGuardianNavHost
+import br.com.leonardo.gardenguardian.navigation.aboutRoute
+import br.com.leonardo.gardenguardian.navigation.homeRoute
+import br.com.leonardo.gardenguardian.navigation.navigateToAbout
+import br.com.leonardo.gardenguardian.navigation.navigateToHome
 import br.com.leonardo.gardenguardian.ui.screens.homeScreen.HomeScreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
-import br.com.leonardo.gardenguardian.utils.sealed.AppDestinations
 
 class MainActivity : ComponentActivity() {
 
@@ -48,23 +50,16 @@ class MainActivity : ComponentActivity() {
             GardenGuardianTheme {
                 Surface {
 
-                    val (icon, destination, contentDescription) = remember(currentDestination) {
+                    val (icon, navigate, contentDescription) = remember(currentDestination) {
                         when (currentDestination?.route) {
-                            AppDestinations.Home.route -> Triple(
-                                Icons.Default.Info, AppDestinations.About.route, getString(
-                                    R.string.FloatingActionButtonIconDescriptionAbout
-                                )
-                            )
 
-                            AppDestinations.About.route -> Triple(
-                                Icons.Default.ArrowBack,
-                                AppDestinations.Home.route,
+                            aboutRoute -> Triple(
+                                Icons.Default.ArrowBack, navController::navigateToHome,
                                 getString(R.string.FloatingActionButtonIconDescriptionBack)
                             )
 
                             else -> Triple(
-                                Icons.Default.Info,
-                                AppDestinations.About.route,
+                                Icons.Default.Info, navController::navigateToAbout,
                                 getString(R.string.FloatingActionButtonIconDescriptionAbout)
                             )
                         }
@@ -72,24 +67,27 @@ class MainActivity : ComponentActivity() {
 
                     Scaffold(floatingActionButton = {
                         FloatingActionButton(onClick = {
-                            navController.navigate(destination) {
-                                popUpTo(destination) {
-                                    inclusive = true
+
+                            val navOptions = navOptions {
+
+                                currentDestination?.let {
+                                    val route =
+                                        if (it.route == aboutRoute) homeRoute else aboutRoute
+                                    popUpTo(route) {
+                                        inclusive = true
+                                    }
                                 }
                             }
+
+                            navigate(navOptions)
+
                         }) {
                             Icon(icon, contentDescription = contentDescription)
                         }
                     })
                     { paddingValues ->
                         Box(modifier = Modifier.padding(paddingValues)) {
-                            NavHost(
-                                navController = navController,
-                                startDestination = AppDestinations.Home.route
-                            ) {
-                                composable(AppDestinations.Home.route) { HomeScreen() }
-                                composable(AppDestinations.About.route) { AboutHomeScreen() }
-                            }
+                            GardenGuardianNavHost(navController = navController)
                         }
                     }
                 }
