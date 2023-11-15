@@ -19,6 +19,15 @@ A aplicação também incorpora o Broadcast Receiver para monitorar o estado do 
 
 </p>
 
+
+## Update 1.2.0
+Agora você decide se as notificações sejam mostradas ou não
+
+<p float="left" align="center">
+<img alt = "screenshot" width = "30%" src = "readme_files/screenshot/V1.2.0.png">
+
+</p>
+
 </br>
 
 
