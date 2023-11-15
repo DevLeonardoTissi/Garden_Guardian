@@ -7,13 +7,16 @@ import android.content.Intent
 import android.os.IBinder
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.notification.Notification
+import br.com.leonardo.gardenguardian.repository.SettingsRepository
 import br.com.leonardo.gardenguardian.ui.activity.MainActivity
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.io.IOException
@@ -21,7 +24,12 @@ import java.io.IOException
 class BluetoothPlantMonitorService : Service() {
 
     private val notificationManager: NotificationManager by inject()
-    private var isReadingData = true
+
+    private val settingsRepository: SettingsRepository by inject()
+
+    private var bluetoothCoroutineJob: Job? = null
+
+    private val settings = settingsRepository.search()
 
     override fun onBind(p0: Intent?): IBinder? {
         return null
@@ -39,8 +47,9 @@ class BluetoothPlantMonitorService : Service() {
 
     private fun startReadingData() {
 
-        CoroutineScope(Dispatchers.IO).launch {
-            while (isReadingData) {
+        bluetoothCoroutineJob = CoroutineScope(Dispatchers.IO).launch {
+
+            while (true) {
                 try {
 
                     BluetoothSocketSingleton.socket?.let {
@@ -49,7 +58,7 @@ class BluetoothPlantMonitorService : Service() {
                         val bytes = inputStream.read(buffer)
                         val humidityPercentage = String(buffer, 0, bytes).trim().toIntOrNull()
 
-                        humidityPercentage?.let {
+                        humidityPercentage?.let { percentage ->
                             when {
                                 (humidityPercentage < 40) -> {
                                     _plantState.value = PlantState.LowWater
@@ -64,8 +73,12 @@ class BluetoothPlantMonitorService : Service() {
                                 }
                             }
 
-                            showNotification(humidityPercentage)
 
+                            if (settings.firstOrNull()?.showNotification == true) {
+                                showNotification(percentage)
+                            } else {
+                                notificationManager.cancel(Int.MAX_VALUE)
+                            }
                         }
                     }
 
@@ -73,6 +86,7 @@ class BluetoothPlantMonitorService : Service() {
                     stopSelf()
                 }
             }
+
         }
     }
 
@@ -104,7 +118,7 @@ class BluetoothPlantMonitorService : Service() {
     }
 
     private fun stopRead() {
-        isReadingData = false
+        bluetoothCoroutineJob?.cancel()
         notificationManager.cancel(Int.MAX_VALUE)
     }
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -35,11 +36,13 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,8 +76,6 @@ import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
 import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.io.IOException
@@ -119,6 +120,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     val openBottomSheetConnectionError = remember { mutableStateOf(false) }
     val openBottomSheetEnableBluetoothFirst = remember { mutableStateOf(false) }
 
+
     val enableBluetoothLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = {
@@ -144,6 +146,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     )
 
     val plant by homeScreenViewModel.plant.collectAsStateWithLifecycle(null)
+    val settings by homeScreenViewModel.settings.collectAsStateWithLifecycle(initialValue = null)
 
     val plantState by homeScreenViewModel.plantState.collectAsStateWithLifecycle(initialValue = null)
 
@@ -175,205 +178,245 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
         }, label = context.getString(R.string.selectColorByConnectionWithDeviceStatusLabel)
     )
 
+    val coroutineScope = rememberCoroutineScope()
+
     homeScreenViewModel.checkInitialBluetoothState()
 
-
-    Surface(
-        shape = RoundedCornerShape(15.dp),
-        shadowElevation = 4.dp,
-        modifier = Modifier.padding(16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxHeight()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(400.dp, 450.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+
+        Surface(
+            shape = RoundedCornerShape(15.dp),
+            shadowElevation = 4.dp,
+            modifier = Modifier.padding(16.dp)
         ) {
-
-            Box(
+            Column(
                 modifier = Modifier
-                    .background(
-                        brush = Brush.verticalGradient(listOf(selectColorByPlantState, Color.White))
-                    )
                     .fillMaxWidth()
+                    .heightIn(400.dp, 450.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
 
-                MyAsyncImage(
+                Box(
                     modifier = Modifier
-                        .size(200.dp)
-                        .offset(y = 100.dp)
-                        .clip(shape = CircleShape)
-                        .align(Alignment.BottomCenter)
-                        .border(
-                            BorderStroke(
-                                2.dp,
-                                brush = Brush.verticalGradient(
-                                    listOf(
-                                        Color.White,
-                                        selectColorByPlantState
-                                    )
+                        .background(
+                            brush = Brush.verticalGradient(
+                                listOf(
+                                    selectColorByPlantState,
+                                    Color.White
                                 )
-                            ), CircleShape
-                        ),
-                    model = if (plant?.img.isNullOrBlank()) DEFAULT_IMAGE_URL else plant?.img,
-                    description = null,
-                    contentScale = ContentScale.Crop,
-                )
-
-
-                IconButton(
-                    onClick = { openAlertDialogEditPlantImage.value = true },
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .align(Alignment.BottomCenter)
-                        .offset(y = 100.dp, x = 50.dp)
-                        .size(50.dp)
-                        .background(color = md_theme_light_primary, shape = CircleShape)
-
-                        .border(
-                            BorderStroke(
-                                2.dp,
-                                color = Color.White
-                            ), CircleShape
+                            )
                         )
+                        .fillMaxWidth()
                 ) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = context.getString(R.string.iconEditDescription),
-                        tint = Color.White
+
+                    MyAsyncImage(
+                        modifier = Modifier
+                            .size(200.dp)
+                            .offset(y = 100.dp)
+                            .clip(shape = CircleShape)
+                            .align(Alignment.BottomCenter)
+                            .border(
+                                BorderStroke(
+                                    2.dp,
+                                    brush = Brush.verticalGradient(
+                                        listOf(
+                                            Color.White,
+                                            selectColorByPlantState
+                                        )
+                                    )
+                                ), CircleShape
+                            ),
+                        model = if (plant?.img.isNullOrBlank()) DEFAULT_IMAGE_URL else plant?.img,
+                        description = null,
+                        contentScale = ContentScale.Crop,
                     )
-                }
 
-            }
 
-            Spacer(modifier = Modifier.height(100.dp))
+                    IconButton(
+                        onClick = { openAlertDialogEditPlantImage.value = true },
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .align(Alignment.BottomCenter)
+                            .offset(y = 100.dp, x = 50.dp)
+                            .size(50.dp)
+                            .background(color = md_theme_light_primary, shape = CircleShape)
 
-            val textPresentation = when (bluetoothDeviceStatus) {
-                DeviceConnectionState.DISCONNECTED -> context.getString(R.string.connectionDeviceDisconnectedStateText)
-                DeviceConnectionState.CONNECTED -> context.getString(R.string.connectionDeviceConnectedStateText)
-            }
-
-            Text(
-                text = textPresentation,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(all = 8.dp),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 20.sp,
-                color = selectColorByConnectionWithDeviceStatus
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 24.dp),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                IconButton(onClick = {
-
-                    if (bluetoothPermissionLauncher.allPermissionsGranted) {
-
-                        if (bluetoothAdapter == null) {
-                            openAlertDialogNotSupportBluetooth.value = true
-
-                        } else if (bluetoothState == BluetoothState.DISABLED) {
-                            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                            enableBluetoothLauncher.launch(enableBtIntent)
-                        } else {
-                            openAlertDialogBluetoothAlreadyActivated.value = true
-                        }
-
-                    } else {
-                        bluetoothPermissionLauncher.launchMultiplePermissionRequest()
+                            .border(
+                                BorderStroke(
+                                    2.dp,
+                                    color = Color.White
+                                ), CircleShape
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = context.getString(R.string.iconEditDescription),
+                            tint = Color.White
+                        )
                     }
 
-
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_bluetooth),
-                        contentDescription = context.getString(R.string.iconBluetoothButton),
-                        tint = selectColorByBluetoothStatus,
-                        modifier = Modifier
-                    )
-
                 }
-                IconButton(onClick = {
-                    var foundDevice = false
 
-                    if (bluetoothState == BluetoothState.ENABLED) {
+                Spacer(modifier = Modifier.height(100.dp))
+
+                val textPresentation = when (bluetoothDeviceStatus) {
+                    DeviceConnectionState.DISCONNECTED -> context.getString(R.string.connectionDeviceDisconnectedStateText)
+                    DeviceConnectionState.CONNECTED -> context.getString(R.string.connectionDeviceConnectedStateText)
+                }
+
+                Text(
+                    text = textPresentation,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(all = 8.dp),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = selectColorByConnectionWithDeviceStatus
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    IconButton(onClick = {
+
                         if (bluetoothPermissionLauncher.allPermissionsGranted) {
 
-                            CoroutineScope(Dispatchers.IO).launch {
+                            if (bluetoothAdapter == null) {
+                                openAlertDialogNotSupportBluetooth.value = true
 
-                                if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
-                                    BluetoothSocketSingleton.socket?.close()
-
-                                } else {
-
-                                    openAlertDialogLoad.value = true
-
-                                    val pairedDevices: Set<BluetoothDevice>? =
-                                        bluetoothAdapter?.bondedDevices
-
-                                    pairedDevices?.forEach { device ->
-                                        val deviceName = device.name
-
-                                        if (deviceName == ARDUINO_DEVICE_NAME) {
-                                            foundDevice = true
-
-                                            BluetoothSocketSingleton.socket =
-                                                device.createRfcommSocketToServiceRecord(
-                                                    UUID.fromString(
-                                                        "00001101-0000-1000-8000-00805F9B34FB"
-                                                    )
-                                                )
-                                            try {
-                                                BluetoothSocketSingleton.socket?.connect()
-                                                openAlertDialogLoad.value = false
-                                            } catch (e: IOException) {
-                                                openAlertDialogLoad.value = false
-
-                                                openBottomSheetConnectionError.value = true
-
-                                            }
-                                        }
-                                    }
-
-                                    if (!foundDevice) {
-                                        openAlertDialogLoad.value = false
-                                        openAlertDialogDeviceNotFound.value = true
-                                    }
-                                }
+                            } else if (bluetoothState == BluetoothState.DISABLED) {
+                                val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                                enableBluetoothLauncher.launch(enableBtIntent)
+                            } else {
+                                openAlertDialogBluetoothAlreadyActivated.value = true
                             }
 
                         } else {
                             bluetoothPermissionLauncher.launchMultiplePermissionRequest()
                         }
 
-                    } else {
 
-                        openBottomSheetEnableBluetoothFirst.value = true
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_bluetooth),
+                            contentDescription = context.getString(R.string.iconBluetoothButton),
+                            tint = selectColorByBluetoothStatus,
+                            modifier = Modifier
+                        )
 
                     }
+                    IconButton(onClick = {
+                        var foundDevice = false
 
-                }) {
-                    Icon(
-                        painter = painterResource(
-                            id = when (bluetoothDeviceStatus) {
-                                DeviceConnectionState.DISCONNECTED -> R.drawable.ic_link_off
-                                DeviceConnectionState.CONNECTED -> R.drawable.ic_check
+                        if (bluetoothState == BluetoothState.ENABLED) {
+                            if (bluetoothPermissionLauncher.allPermissionsGranted) {
+
+                                coroutineScope.launch {
+
+                                    if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
+                                        BluetoothSocketSingleton.socket?.close()
+
+                                    } else {
+
+                                        openAlertDialogLoad.value = true
+
+                                        val pairedDevices: Set<BluetoothDevice>? =
+                                            bluetoothAdapter?.bondedDevices
+
+                                        pairedDevices?.forEach { device ->
+                                            val deviceName = device.name
+
+                                            if (deviceName == ARDUINO_DEVICE_NAME) {
+                                                foundDevice = true
+
+                                                BluetoothSocketSingleton.socket =
+                                                    device.createRfcommSocketToServiceRecord(
+                                                        UUID.fromString(
+                                                            "00001101-0000-1000-8000-00805F9B34FB"
+                                                        )
+                                                    )
+
+
+                                                try {
+                                                    BluetoothSocketSingleton.socket?.connect()
+                                                    openAlertDialogLoad.value = false
+                                                } catch (e: IOException) {
+                                                    openAlertDialogLoad.value = false
+                                                    openBottomSheetConnectionError.value = true
+
+                                                }
+                                            }
+                                        }
+
+                                        if (!foundDevice) {
+                                            openAlertDialogLoad.value = false
+                                            openAlertDialogDeviceNotFound.value = true
+                                        }
+                                    }
+                                }
+
+                            } else {
+                                bluetoothPermissionLauncher.launchMultiplePermissionRequest()
                             }
-                        ),
-                        contentDescription = context.getString(R.string.iconLinkButton),
-                        tint = selectColorByConnectionWithDeviceStatus
-                    )
+
+                        } else {
+                            openBottomSheetEnableBluetoothFirst.value = true
+                        }
+
+                    }) {
+                        Icon(
+                            painter = painterResource(
+                                id = when (bluetoothDeviceStatus) {
+                                    DeviceConnectionState.DISCONNECTED -> R.drawable.ic_link_off
+                                    DeviceConnectionState.CONNECTED -> R.drawable.ic_check
+                                }
+                            ),
+                            contentDescription = context.getString(R.string.iconLinkButton),
+                            tint = selectColorByConnectionWithDeviceStatus
+                        )
+                    }
                 }
             }
         }
+
+
+        settings?.showNotification?.let { value ->
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            Text(
+                text = "Notificações de Leitura",
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(all = 8.dp),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+                color = md_theme_light_primary
+            )
+
+
+
+            Switch(checked = value, onCheckedChange = {
+                homeScreenViewModel.updateShowNotificationSetting(it)
+            })
+        }
     }
+
+
 
 
 
