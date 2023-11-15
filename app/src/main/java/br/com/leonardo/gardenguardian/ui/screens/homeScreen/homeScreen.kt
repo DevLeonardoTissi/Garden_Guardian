@@ -408,8 +408,6 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 color = md_theme_light_primary
             )
 
-
-
             Switch(checked = value, onCheckedChange = {
                 homeScreenViewModel.updateShowNotificationSetting(it)
             })
