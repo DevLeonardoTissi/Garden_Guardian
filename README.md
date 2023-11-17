@@ -19,6 +19,14 @@ A aplicação também incorpora o Broadcast Receiver para monitorar o estado do 
 
 </p>
 
+## Update 1.3.0
+Adição de gráfico para auxiliar no monitoramento
+
+<p float="left" align="center">
+<img alt = "screenshot" width = "30%" src = "readme_files/gif/v1.3.0.gif">
+
+</p>
+
 
 ## Update 1.2.0
 Agora você decide se as notificações sejam mostradas ou não
@@ -113,6 +121,7 @@ Download do <a href="/arduino_files/garden_guardian_arduino_file.ino?raw=true">A
   - [Koin:](https://insert-koin.io/) Para Injeção de dependência
   - [Coil:](https://github.com/coil-kt/coil) Para load de imagens a partir da URL.
   - [Lottie Animation:](https://lottiefiles.com/) Animações.
+  - [Tico:](https://patrykandpatrick.com/vico/wiki/) Gráficos.
 
  
 
