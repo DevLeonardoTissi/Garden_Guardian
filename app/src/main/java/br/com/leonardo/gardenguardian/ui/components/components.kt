@@ -28,20 +28,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import br.com.leonardo.gardenguardian.R
 import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
+import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_tertiary
 import coil.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.patrykandpatrick.vico.compose.component.shapeComponent
+import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
+import com.patrykandpatrick.vico.compose.legend.legendItem
+import com.patrykandpatrick.vico.compose.legend.verticalLegend
+import com.patrykandpatrick.vico.core.component.shape.Shapes
+import com.patrykandpatrick.vico.core.component.text.textComponent
 
 
 @Composable
@@ -314,3 +323,39 @@ fun ModalBottomSheetWithAnimation(onDismissRequest: () -> Unit, rawRes: Int, tex
 
     }
 }
+
+@Composable
+fun rememberLegend() = verticalLegend(
+    items = chartColors.mapIndexed { _, chartColor ->
+
+        val context = LocalContext.current
+
+        legendItem(
+            icon = shapeComponent(Shapes.pillShape, chartColor),
+            label = textComponent {
+                Text(
+                    text = context.getString(R.string.rememberLegendTitle),
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .padding(all = 8.dp),
+                    fontSize = 16.sp,
+                    color = md_theme_light_primary
+                )
+            },
+            labelText = context.getString(R.string.rememberLegendLabel),
+        )
+    },
+    iconSize = legendItemIconSize,
+    iconPadding = legendItemIconPaddingValue,
+    spacing = legendItemSpacing,
+    padding = legendPadding,
+)
+
+
+private val chartColors = listOf(md_theme_light_tertiary)
+private val legendItemIconSize = 8.dp
+private val legendItemIconPaddingValue = 10.dp
+private val legendItemSpacing = 4.dp
+private val legendTopPaddingValue = 8.dp
+private val legendPadding = dimensionsOf(top = legendTopPaddingValue)
+

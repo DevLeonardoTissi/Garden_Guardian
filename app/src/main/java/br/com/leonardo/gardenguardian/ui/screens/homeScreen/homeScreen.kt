@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -66,9 +67,11 @@ import br.com.leonardo.gardenguardian.ui.components.DialogWithImage
 import br.com.leonardo.gardenguardian.ui.components.ModalBottomSheetWithAnimation
 import br.com.leonardo.gardenguardian.ui.components.MyAsyncImage
 import br.com.leonardo.gardenguardian.ui.components.NonDismissableAlertDialog
+import br.com.leonardo.gardenguardian.ui.components.rememberLegend
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import br.com.leonardo.gardenguardian.ui.theme.dark_yellow
 import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_primary
+import br.com.leonardo.gardenguardian.ui.theme.md_theme_light_tertiary
 import br.com.leonardo.gardenguardian.ui.theme.red
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.enums.BluetoothState
@@ -76,6 +79,16 @@ import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
 import br.com.leonardo.gardenguardian.utils.enums.PlantState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
+import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollState
+import com.patrykandpatrick.vico.compose.component.shape.shader.fromBrush
+import com.patrykandpatrick.vico.core.chart.line.LineChart
+import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShaders
+import com.patrykandpatrick.vico.core.component.text.textComponent
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.io.IOException
@@ -149,6 +162,15 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
     val settings by homeScreenViewModel.settings.collectAsStateWithLifecycle(initialValue = null)
 
     val plantState by homeScreenViewModel.plantState.collectAsStateWithLifecycle(initialValue = null)
+
+    val percentage by homeScreenViewModel.moisturePercentage.collectAsStateWithLifecycle(
+        initialValue = null
+    )
+
+
+    val dataLineSpec = remember { arrayListOf<LineChart.LineSpec>() }
+    val scrollState = rememberChartScrollState()
+
 
     val selectColorByBluetoothStatus by animateColorAsState(
         targetValue = when (bluetoothState) {
@@ -397,7 +419,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             Spacer(modifier = Modifier.height(50.dp))
 
             Text(
-                text = "Notificações de Leitura",
+                text = context.getString(R.string.switchTextNotifications),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -411,10 +433,53 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             Switch(checked = value, onCheckedChange = {
                 homeScreenViewModel.updateShowNotificationSetting(it)
             })
+
+            Spacer(modifier = Modifier.height(50.dp))
+
         }
+
+        percentage?.let {
+            dataLineSpec.add(
+                LineChart.LineSpec(
+                    lineColor = md_theme_light_tertiary.toArgb(),
+                    lineBackgroundShader = DynamicShaders.fromBrush(
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.White,
+                                md_theme_light_tertiary
+                            )
+                        )
+                    )
+
+                )
+            )
+
+            Chart(
+                modifier = Modifier.padding(16.dp),
+                chart = lineChart(lines = dataLineSpec),
+                chartModelProducer = ChartEntryModelProducer(it),
+                startAxis = rememberStartAxis(
+                    titleComponent = textComponent {
+                        Text(
+                            text = context.getString(R.string.chartTitle),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(all = 8.dp),
+                            fontSize = 18.sp,
+                            color = md_theme_light_primary
+                        )
+                    }
+                ),
+                bottomAxis = rememberBottomAxis(),
+                chartScrollState = scrollState,
+                legend = rememberLegend()
+            )
+
+            Spacer(modifier = Modifier.height(100.dp))
+
+        }
+
     }
-
-
 
 
 
@@ -531,9 +596,6 @@ fun HomeScreenPreview() {
         }
     }
 }
-
-
-
 
 
 

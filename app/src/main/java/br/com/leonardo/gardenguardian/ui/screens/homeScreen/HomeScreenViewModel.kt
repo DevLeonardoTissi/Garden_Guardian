@@ -30,6 +30,10 @@ class HomeScreenViewModel(
 
     val settings: Flow<Settings> = settingsRepository.search()
 
+    val moisturePercentage = BluetoothPlantMonitorService.moisturePercentage
+
+
+
     fun checkInitialBluetoothState() = BluetoothBroadcastReceiver.checkInitialBluetoothState()
 
     fun updateImg(url: String?) {

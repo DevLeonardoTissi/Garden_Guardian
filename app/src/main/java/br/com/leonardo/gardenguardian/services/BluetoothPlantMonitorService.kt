@@ -11,6 +11,8 @@ import br.com.leonardo.gardenguardian.repository.SettingsRepository
 import br.com.leonardo.gardenguardian.ui.activity.MainActivity
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.enums.PlantState
+import com.patrykandpatrick.vico.core.entry.ChartEntry
+import com.patrykandpatrick.vico.core.entry.entryOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,6 +33,7 @@ class BluetoothPlantMonitorService : Service() {
 
     private val settings = settingsRepository.search()
 
+
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
@@ -43,6 +46,12 @@ class BluetoothPlantMonitorService : Service() {
     companion object {
         private val _plantState: MutableStateFlow<PlantState?> = MutableStateFlow(null)
         val plantState: Flow<PlantState?> = _plantState
+
+        private val _moisturePercentage: MutableStateFlow<List<ChartEntry>> =
+            MutableStateFlow(listOf(entryOf(0f, 0f)))
+        val moisturePercentage: Flow<List<ChartEntry>> = _moisturePercentage
+
+
     }
 
     private fun startReadingData() {
@@ -58,9 +67,20 @@ class BluetoothPlantMonitorService : Service() {
                         val bytes = inputStream.read(buffer)
                         val humidityPercentage = String(buffer, 0, bytes).trim().toIntOrNull()
 
+
                         humidityPercentage?.let { percentage ->
+
+                            if (_moisturePercentage.value.size >= 10) _moisturePercentage.value =
+                                emptyList()
+
+                            _moisturePercentage.value += entryOf(
+                                _moisturePercentage.value.size.toFloat(),
+                                percentage
+                            )
+
+
                             when {
-                                (humidityPercentage < 40) -> {
+                                (humidityPercentage < 40f) -> {
                                     _plantState.value = PlantState.LowWater
                                 }
 

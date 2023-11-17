@@ -54,6 +54,8 @@ android {
 
 dependencies {
 
+    implementation("com.patrykandpatrick.vico:compose-m3:1.12.0")
+
     //Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
 

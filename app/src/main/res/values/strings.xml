@@ -15,6 +15,13 @@
     <string name="connectionDeviceDisconnectedStateText">Dispositivo Desconectado</string>
     <string name="iconBluetoothButton">bluetooth icon to show that, by clicking this button, you will be activating your device bluetooth</string>
     <string name="iconLinkButton">link icon to show that by clicking this button you will be connecting with the arduino device</string>
+    <string name="switchTextNotifications">Notificações de Leitura</string>
+    <string name="chartTitle">Verificando...</string>
+
+
+    <!-- Remember Legend Composable -->
+    <string name="rememberLegendTitle">"Umidade em porcentagem"</string>
+    <string name="rememberLegendLabel">"Umidade"</string>
 
 
     <!-- Alert Dialog NotSupport Bluetooth -->
@@ -67,7 +74,6 @@
 
     <!-- Bottom Sheet Enable Bluetooth First -->
     <string name="BottomSheetEnableBluetoothFirstText">Necessário ligar o bluetooth primeiro para tentar conectar ao dispositivo</string>
-
 
 
     <!-- Common -->
