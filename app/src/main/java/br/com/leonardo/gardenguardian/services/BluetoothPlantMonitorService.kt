@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import java.io.IOException
 
 class BluetoothPlantMonitorService : Service() {
 
@@ -102,7 +101,7 @@ class BluetoothPlantMonitorService : Service() {
                         }
                     }
 
-                } catch (_: IOException) {
+                } catch (_: Exception) {
                     stopSelf()
                 }
             }

@@ -454,28 +454,32 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
                 )
             )
 
-            Chart(
-                modifier = Modifier.padding(16.dp),
-                chart = lineChart(lines = dataLineSpec),
-                chartModelProducer = ChartEntryModelProducer(it),
-                startAxis = rememberStartAxis(
-                    titleComponent = textComponent {
-                        Text(
-                            text = context.getString(R.string.chartTitle),
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(all = 8.dp),
-                            fontSize = 18.sp,
-                            color = md_theme_light_primary
-                        )
-                    }
-                ),
-                bottomAxis = rememberBottomAxis(),
-                chartScrollState = scrollState,
-                legend = rememberLegend()
-            )
+            if (bluetoothDeviceStatus == DeviceConnectionState.CONNECTED) {
 
-            Spacer(modifier = Modifier.height(100.dp))
+                Chart(
+                    modifier = Modifier.padding(16.dp),
+                    chart = lineChart(lines = dataLineSpec),
+                    chartModelProducer = ChartEntryModelProducer(it),
+                    startAxis = rememberStartAxis(
+                        titleComponent = textComponent {
+                            Text(
+                                text = context.getString(R.string.chartTitle),
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(all = 8.dp),
+                                fontSize = 18.sp,
+                                color = md_theme_light_primary
+                            )
+                        }
+                    ),
+                    bottomAxis = rememberBottomAxis(),
+                    chartScrollState = scrollState,
+                    legend = rememberLegend()
+                )
+
+                Spacer(modifier = Modifier.height(100.dp))
+
+            }
 
         }
 
