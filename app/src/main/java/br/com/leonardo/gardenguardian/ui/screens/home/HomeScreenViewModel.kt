@@ -1,4 +1,4 @@
-package br.com.leonardo.gardenguardian.ui.screens.homeScreen
+package br.com.leonardo.gardenguardian.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

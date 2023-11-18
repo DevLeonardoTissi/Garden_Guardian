@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import br.com.leonardo.gardenguardian.ui.screens.homeScreen.HomeScreen
+import br.com.leonardo.gardenguardian.ui.screens.home.HomeScreen
 
 internal const val homeRoute = "home"
 fun NavGraphBuilder.homeScreen() {

@@ -8,7 +8,7 @@ import br.com.leonardo.gardenguardian.database.DatabaseCallback
 import br.com.leonardo.gardenguardian.notification.NotificationMainChannel
 import br.com.leonardo.gardenguardian.repository.PlantRepository
 import br.com.leonardo.gardenguardian.repository.SettingsRepository
-import br.com.leonardo.gardenguardian.ui.screens.homeScreen.HomeScreenViewModel
+import br.com.leonardo.gardenguardian.ui.screens.home.HomeScreenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

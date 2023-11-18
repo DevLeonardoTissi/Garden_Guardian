@@ -1,4 +1,4 @@
-package br.com.leonardo.gardenguardian.ui.screens.homeScreen
+package br.com.leonardo.gardenguardian.ui.screens.home
 
 import android.Manifest
 import android.annotation.SuppressLint
