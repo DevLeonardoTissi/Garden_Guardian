@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
-    id ("com.google.firebase.crashlytics")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -54,10 +54,16 @@ android {
 
 dependencies {
 
-    implementation("com.patrykandpatrick.vico:compose-m3:1.12.0")
+    val glanceVersion = "1.0.0"
+    implementation("androidx.glance:glance-appwidget:$glanceVersion")
+    implementation("androidx.glance:glance-material3:$glanceVersion")
+
+    val vicoVersion = "1.12.0"
+    implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion")
 
     //Coil
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    val coilVersion = "2.4.0"
+    implementation("io.coil-kt:coil-compose:$coilVersion")
 
     //Room Database
     val roomVersion = "2.5.2"
@@ -65,16 +71,15 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
+    val accompanistPermissionsVersion = "0.33.2-alpha"
+    implementation("com.google.accompanist:accompanist-permissions:$accompanistPermissionsVersion")
 
-    implementation ("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
-
-    //Koin
     val koinVersion = "3.5.0"
-    implementation ("io.insert-koin:koin-androidx-compose:$koinVersion")
+    implementation("io.insert-koin:koin-androidx-compose:$koinVersion")
 
-    //Navigation
     val navVersion = "2.7.4"
     implementation("androidx.navigation:navigation-compose:$navVersion")
+    androidTestImplementation("androidx.navigation:navigation-testing:$navVersion")
 
     val lifecycleVersion = "2.6.2"
     implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
@@ -88,9 +93,10 @@ dependencies {
     val browserVersion = "1.6.0"
     implementation("androidx.browser:browser:$browserVersion")
 
-    implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
+    val firebaseDomVersion = "32.5.0"
+    implementation(platform("com.google.firebase:firebase-bom:$firebaseDomVersion"))
     implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation ("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
 
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -102,7 +108,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
-    androidTestImplementation ("androidx.navigation:navigation-testing:$navVersion")
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

@@ -30,7 +30,7 @@ class HomeScreenViewModel(
 
     val settings: Flow<Settings> = settingsRepository.search()
 
-    val moisturePercentage = BluetoothPlantMonitorService.moisturePercentage
+    val moisturePercentage = BluetoothPlantMonitorService.moisturePercentageChart
 
 
 

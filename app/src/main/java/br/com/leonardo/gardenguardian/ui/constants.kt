@@ -7,4 +7,5 @@ const val ARDUINO_DEVICE_NAME = "HC-06"
 const val GITHUB_LINK = "https://github.com/DevLeonardoTissi"
 const val LINKEDIN_LINK = "https://www.linkedin.com/in/leonardotissi/"
 
-const val SNACKBAR_KEY = "KEY"
+const val SNACK_BAR_KEY = "SNACK_BAR_KEY"
+

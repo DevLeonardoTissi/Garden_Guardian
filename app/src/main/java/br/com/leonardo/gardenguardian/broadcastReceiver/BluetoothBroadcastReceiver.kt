@@ -8,9 +8,10 @@ import android.content.Context
 import android.content.Intent
 import br.com.leonardo.gardenguardian.services.BluetoothPlantMonitorService
 import br.com.leonardo.gardenguardian.ui.ARDUINO_DEVICE_NAME
+import br.com.leonardo.gardenguardian.utils.checkBluetoothState
 import br.com.leonardo.gardenguardian.utils.enums.BluetoothState
 import br.com.leonardo.gardenguardian.utils.enums.DeviceConnectionState
-import br.com.leonardo.gardenguardian.utils.checkBluetoothState
+import br.com.leonardo.gardenguardian.widget.MonitorWidget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -38,7 +39,7 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
 
     @SuppressLint("MissingPermission")
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(context: Context, intent: Intent?) {
         val action: String? = intent?.action
 
         action?.let {
@@ -78,6 +79,8 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
                     }
                 }
             }
+
+            MonitorWidget().updateWidget(context)
         }
     }
 

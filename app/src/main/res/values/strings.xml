@@ -76,6 +76,13 @@
     <!-- Bottom Sheet Enable Bluetooth First -->
     <string name="BottomSheetEnableBluetoothFirstText">Necessário ligar o bluetooth primeiro para tentar conectar ao dispositivo</string>
 
+    <!-- Monitor Widget -->
+    <string name="monitorWidgetDescription">Medidor de umidade</string>
+    <string name="monitorWidgetTextDisconnected">Desconectado</string>
+    <string name="monitorWidgetTextConnected">Umidade: %d%%</string>
+    <string name="monitorWidgetButtonRefreshText">Atualizar</string>
+    <string name="monitorWidgetImageDescription">Imagem do aplicativo sinalizando o status da planta</string>
+
 
     <!-- Common -->
     <string name="commonOk">OK</string>

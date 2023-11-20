@@ -11,6 +11,7 @@ import br.com.leonardo.gardenguardian.repository.SettingsRepository
 import br.com.leonardo.gardenguardian.ui.activity.MainActivity
 import br.com.leonardo.gardenguardian.utils.BluetoothSocketSingleton
 import br.com.leonardo.gardenguardian.utils.enums.PlantState
+import br.com.leonardo.gardenguardian.widget.MonitorWidget
 import com.patrykandpatrick.vico.core.entry.ChartEntry
 import com.patrykandpatrick.vico.core.entry.entryOf
 import kotlinx.coroutines.CoroutineScope
@@ -46,9 +47,12 @@ class BluetoothPlantMonitorService : Service() {
         private val _plantState: MutableStateFlow<PlantState?> = MutableStateFlow(null)
         val plantState: Flow<PlantState?> = _plantState
 
-        private val _moisturePercentage: MutableStateFlow<List<ChartEntry>> =
+        private val _moisturePercentageChart: MutableStateFlow<List<ChartEntry>> =
             MutableStateFlow(listOf(entryOf(0f, 0f)))
-        val moisturePercentage: Flow<List<ChartEntry>> = _moisturePercentage
+        val moisturePercentageChart: Flow<List<ChartEntry>> = _moisturePercentageChart
+
+        private val _moisturePercent: MutableStateFlow<Int?> = MutableStateFlow(null)
+        val moisturePercent: Flow<Int?> = _moisturePercent
 
 
     }
@@ -69,14 +73,15 @@ class BluetoothPlantMonitorService : Service() {
 
                         humidityPercentage?.let { percentage ->
 
-                            if (_moisturePercentage.value.size >= 10) _moisturePercentage.value =
+                            _moisturePercent.value = percentage
+
+                            if (_moisturePercentageChart.value.size >= 10) _moisturePercentageChart.value =
                                 emptyList()
 
-                            _moisturePercentage.value += entryOf(
-                                _moisturePercentage.value.size.toFloat(),
+                            _moisturePercentageChart.value += entryOf(
+                                _moisturePercentageChart.value.size.toFloat(),
                                 percentage
                             )
-
 
                             when {
                                 (humidityPercentage < 40f) -> {
@@ -103,9 +108,10 @@ class BluetoothPlantMonitorService : Service() {
 
                 } catch (_: Exception) {
                     stopSelf()
+                } finally {
+                    MonitorWidget().updateWidget(applicationContext)
                 }
             }
-
         }
     }
 

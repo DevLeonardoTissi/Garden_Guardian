@@ -186,7 +186,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = koinViewModel()) {
             DeviceConnectionState.CONNECTED -> when (plantState) {
                 PlantState.LowWater -> red
                 PlantState.Alert -> dark_yellow
-                PlantState.Ok -> md_theme_light_primary
+                PlantState.Ok -> md_theme_light_tertiary
                 else -> Color.White
             }
 

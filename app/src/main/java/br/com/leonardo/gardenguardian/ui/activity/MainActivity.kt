@@ -40,7 +40,7 @@ import br.com.leonardo.gardenguardian.navigation.aboutRoute
 import br.com.leonardo.gardenguardian.navigation.homeRoute
 import br.com.leonardo.gardenguardian.navigation.navigateToAbout
 import br.com.leonardo.gardenguardian.navigation.navigateToHome
-import br.com.leonardo.gardenguardian.ui.SNACKBAR_KEY
+import br.com.leonardo.gardenguardian.ui.SNACK_BAR_KEY
 import br.com.leonardo.gardenguardian.ui.screens.home.HomeScreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
 import kotlinx.coroutines.launch
@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
             val backStackEntryState by navController.currentBackStackEntryAsState()
             val visitMessage = backStackEntryState
                 ?.savedStateHandle
-                ?.getStateFlow<String?>(SNACKBAR_KEY, null)
+                ?.getStateFlow<String?>(SNACK_BAR_KEY, null)
                 ?.collectAsState()
             val currentDestination = backStackEntryState?.destination
             val scope = rememberCoroutineScope()
@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
 
                                     if (route == aboutRoute) {
                                         navController.currentBackStackEntry?.savedStateHandle?.set(
-                                            SNACKBAR_KEY,
+                                            SNACK_BAR_KEY,
                                             getString(R.string.SnackBarMessage)
                                         )
                                     }
