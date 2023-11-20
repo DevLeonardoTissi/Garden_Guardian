@@ -19,6 +19,14 @@ A aplicação também incorpora o Broadcast Receiver para monitorar o estado do 
 
 </p>
 
+## Update 1.4.0
+Adição de widget dinâmico para auxiliar no monitoramento
+
+<p float="left" align="center">
+<img alt = "screenshot" width = "30%" src = "readme_files/gif/v1.4.0.gif">
+
+</p>
+
 ## Update 1.3.0
 Adição de gráfico para auxiliar no monitoramento
 
@@ -98,6 +106,7 @@ Download do <a href="/arduino_files/garden_guardian_arduino_file.ino?raw=true">A
   - Room - Criação e gerenciamento de dados persistentes em um banco de dados SQLite
   - Browser - Exibir páginas da web no navegador padrão do usuário
   - Coroutines
+  - Glance - Widget
   
 
  
