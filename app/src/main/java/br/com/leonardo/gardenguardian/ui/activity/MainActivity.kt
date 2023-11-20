@@ -43,6 +43,7 @@ import br.com.leonardo.gardenguardian.navigation.navigateToHome
 import br.com.leonardo.gardenguardian.ui.SNACK_BAR_KEY
 import br.com.leonardo.gardenguardian.ui.screens.home.HomeScreen
 import br.com.leonardo.gardenguardian.ui.theme.GardenGuardianTheme
+import br.com.leonardo.gardenguardian.widget.MonitorWidget
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -52,6 +53,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
 
         setContent {
@@ -70,6 +72,8 @@ class MainActivity : ComponentActivity() {
                     snackBarHost.showSnackbar(message = message, duration = SnackbarDuration.Short)
                 }
             }
+
+            MonitorWidget().updateWidget(this)
 
             GardenGuardianTheme {
                 Surface {
